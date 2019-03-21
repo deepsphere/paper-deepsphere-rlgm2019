@@ -7,7 +7,13 @@
 \usepackage{hyperref}
 \usepackage{url}
 
-\title{DeepSphere: an equivariant spherical CNN based on a graph NN}
+\title{DeepSphere}
+% Keywords: equivariance, spherical CNN, graph NN
+%\title{DeepSphere: an equivariant spherical CNN based on a graph NN}
+% Exploiting symmetries with Graph Neural Networks
+% Another reason to use Graph Neural Networks: exploiting symmetries
+% Another case for Graph Neural Networks: exploiting symmetries
+% The case for using graphs to reason / compute / solve continuous problems.
 
 \author{Michaël Defferrard \\
 Institute of Electrical Engineering \\
@@ -30,22 +36,118 @@ Zurich, Switzerland \\
 \maketitle
 
 \begin{abstract}
-	\todo{todo}
+	\todo{TODO:
+		\begin{enumerate}
+			\item add figures from DeepSphere cosmo
+			\item reorganize thoughts
+			\item fill the holes
+			\item coherent and consistent story
+		\end{enumerate}
+	}
 \end{abstract}
 
 \section{Introduction}
 
+There has been a lot of interest recently [xx] in studying and developing NN architectures that exploit symmetries in the data by being equivariant (or invariant) to a select group of symmetric transformations (symmetry group).
+In this paper, we argue that graph neural networks are a flexible model (albeit not the most general) to exploit such symmetries.
+graphs are a great support for computations on many domains.
+
+%\section{Related Work}
+\todo{Related work as a paragraph. Mention interest in spherical CNNs for various applications, importance of equivariance and invariance, previous exploratory work from Renata and ourselves.}
+
+As there is no equivalent to the uniform sampling of Euclidean space on the sphere, sphere pixelizations have been engineered to have some characteristics: equirectangular (a.k.a. equiangular or geographic) is simple\footnote{It is used in most spherical CNNs cite Cohen, renata, esteves}. HEALPix is equal-area\footnote{That is important for white noise to stay white.}, hierarchical, and has a fast SHT \citep{healpix}, GLESP features an exact (to machine precision) SHT \citep{glesp}, sympix?, cubed-sphere?.
+\todo{look at the wording in sympix}
+\todo{maybe have a table, or a list of desired properties from a sampling}
+
+\todo{What is the problem we want to solve? Identify it. Our solution: allow any sampling, flexibility.}
+\todo{there is a compromise about the sampling quality (how far from uniform) and how close discrete computations can be made to the true continuous ones}
+masked data is a pain for ML in general (with graphs, we can just make it disappear)
+
+\todo{Most of our view is shaped by cosmo. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems the most advanced for SP on the sphere.}
+
+\todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
+
+\todo{From \citet{kondor2018equivariance}:
+* convolution implies equivariance to the action of some group
+* to be equivariant (to exploit symmetries in the data), you need convolution
+* often easier to describe in Fourier space => motivation for the spectral interpretation?
+}
+
+\subsection{The sphere}
+
+$S^2 = SO(3) / SO(2) (/ = modulo)$
+
+$S^2$ is an homogeneous space of $SO(3)$.
+
 \section{Method}
 
-\section{Related Work}
+In this work, we use the graph neural network proposed by \citet{defferrard2016gnn}.
+While there exists many graph NNs (see for example xxx and xxx for recent reviews),
+\todo{Why this graph NN? We want an equivalence with the continuous world to prove equivariance to arbitrary rotations.}
+
+
+\todo{Basics of GSP, how the graph is built, polynomial filters.}
+% That should be short: it's an ML audience. We can reference previous work. No general ML stuff, as in cosmo paper.
+
+%\section{Spherical harmonics and equivariance}
+\section{Harmonics and equivariance}
+
+\todo{why equivalence to continuous provides equivariance. Clean way of doing it. Alternative: Renata's mechanical approach.}
+Proper study of symmetries and equivariance requires a continuous treatment.
+For example, only rotations by $90^\circ$ can be studied on a discrete sampling grid.
+
+Known result: DFT = ring, DCT = path. Show some plots, the equations, cite the DCT paper.
+
+From the grid: cylinder, sphere, torus
+
+Mention boundary conditions: reflective by default, closed domains (sphere, torus)
+
+\todo{Appendix A of cosmo paper}
+
+\todo{new results from Martino: becomes better in BN setting, currently under study}
+
+\todo{we have less rich operations (compared to the most general linear equivariant map) by restricting our filters to be radial, but does it matter in practice?}
+\todo{isotropic filters provide invariance to the third rotation}
 
 \section{Experiments}
 
-\section{Conclusion}
+\todo{the cosmo experiment}
+
+\todo{maybe mention some preliminary results on SHREC-17: we could say performance are so far mostly similar (while being invariant to the third rotation), still under study}
+
+\section{Conclusion}  % & perspective
+
+\todo{Generalization vs specialization: most general is to assume no symmetries (fully connected NN).
+NNs can be specialized by adding some equivariance and invariance to symmetry groups such as translation, rotation, flip, etc.
+More specialized NNs are more limited in the class of functions they can approximate, but requires less samples.
+Again, use the right symmetries.}
+
+\todo{As equivariance is not the Graal either. We expect the desired amount of equivariance to depend on the data and task. As usual, practitioners should adopt a NN architecture that exploit the symmetries of their problem. Cite paper with difference operators that is not equivariant but performs better than Cohen.}
+
+\todo{future directions: equivalence / convergence to spherical harmonics, other tasks, comparison with other spherical CNNs, graph CNNs (especially those for manifolds), boundary conditions on partial sphere}
+
+\textbf{Long term vision.}
+
+We hope to establish graphs as a generic support for processing and learning over known and unknown manifolds.
+\todo{Applications are plenty:
+known manifolds (1D, 2D, 3D Euclidean spaces, circle, sphere)
+% Minkowski spacetime
+unknown manifolds (shapes, point clouds, feature sets)
+}
+\todo{
+* known manifolds: grid, sphere, spacetime (a pseudo-Riemannian 4-manifold), surfaces defined by NURBS, anything else?
+* unknown manifolds: meshes (human body), point clouds => what are the symmetries? local isometry
+* non-manifold: all networks (brain, social, transportation, telecom, etc.) and relations (author-papers, user-products)
+}
+
+\todo{Similar goal: graph CNNs for group equivariant convolution.}
+
+The vision is to push the use of graphs as the support for computation on manifolds. The advantages of graphs are to relax constraints on the sampling (e.g., allow an irregular or partial sampling), and be computationally more efficient (while being exact w.r.t. the continuous case).
+Part of a broader research effort to explore the use of GSP to solve continuous problems.
 
 \subsubsection*{Acknowledgments}
 
-Pierre, Cardoso, Tomek?
+\todo{Pierre, Cardoso, Tomek?}
 
 \bibliography{refs}
 \bibliographystyle{iclr2019}
