@@ -189,24 +189,23 @@ While there exists many graph NNs (see for example xxx and xxx for recent review
 
 % \todo{why equivalence to continuous provides equivariance. Clean way of doing it. Alternative: Renata's mechanical approach.}
 
-As both the graph and the traditional convolution can be expressed as a multiplication in the spectral/Fourier domain, the harmonic analyis of the graph Laplacian provides valuable insides on the equivariance property of the graph convolution. 
-The rational being that as the spectral bases allign, the convolution become more similar, with the consequence that the equivariance property of the trational convolution being carried out to the graph convolution. 
+As both the graph and the spherical convolution can be expressed as a multiplication in the Fourier domain, the spectral analysis of the graph Laplacian provides valuable insights on the equivariance property of the graph convolution. 
+The rationale being that as the spectral bases align, the two operations become more similar, with the consequence that the equivariance property of the spherical convolution being carried out to the graph convolution. 
 
 
 
-As an example, let us take a $1$-dimentional circle Manifold $\mathcal{C}^1$ embedded in a $2$-dimensional space as depicted in \figref{ring} and let us parametrize each point $(\cos\theta,\sin\theta)$ of $\mathcal{C}^1$ with the variable $\theta\in[0,2\pi[$.
-The harmonics, i.e. the eigenfunction of the Laplace-Beltrami operator, corresponding to the $\mathcal{C}^1$ can be expressed as $u_\ell(\theta)=e^{i \theta m \ell}$, for $\ell \in \mathbb{N}$ and $m\in\{-1,1\}$. 
-Interestingly, if one take a \emph{regular sampling} on the $\mathcal{C}^1$, as shown in \figref{ring}, the sampled eigenfunctions turn out to be the discrete fourier basis, meaning that the harmonic decomposition of a discretized function on the circle can be done using the well-known Discrete Fourier Transform (DFT). 
-It turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors graph Laplacian \cite{strang1999discrete}. Hence, in this case, it can be verified that both convolutions are equivalent under mild assumptions \footnote{See \cite[section 2.2 and Equation3]{perraudin2017stationary} for details.} 
+In order to better understand this process, let us study the circle Manifold $\mathcal{C}^1$ as depicted in \figref{ring}. We parametrize each point $(\cos\theta,\sin\theta)$ of $\mathcal{C}^1$ with the variable $\theta\in[0,2\pi[$.
+For this manifold, the eigenfunctions of the Laplace-Beltrami operator can be expressed as $u_\ell(\theta)=e^{i \theta m \ell}$, for $\ell \in \mathbb{N}$ and $m\in\{-1,1\}$. 
+Interestingly, if one selects a \emph{regular sampling} on the $\mathcal{C}^1$, as shown in \figref{ring}, the sampled eigenfunctions turn out to be the discrete Fourier basis, meaning that the harmonic decomposition of a discretized function on the circle can be done using the well-known Discrete Fourier Transform (DFT). 
+In this case, it turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors graph Laplacian \cite{strang1999discrete}. Hence, in the $\mathcal{C}^1$ case, it can be verified, under mild assumptions, that the graph convolution is equivariant to translation\footnote{See \cite[section 2.2 and Equation3]{perraudin2017stationary} for details.}  
 It should be noted that if an irregular sampling is selected, then the graph Fourier basis will not align the sampled manifold eigenvectors. 
 
 
-Proving that the DFT exponentials are graph Laplacian eigenvectors is a simple task given the fact that the graph weight matrix is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases. 
-The circle $\mathcal{C}^1$ is not the only manifold for which there exists a sampling such that the graph Laplacian eigenvetor correspond to the sampled harmonic.
-Higher dimension circle such as the torus $\mathcal{C}^2$ have the same property. 
-There are two common points in all of these examples: a) The sampling is regular, and b), the constructed graph is cirulant,\footnote{A circulant graph is an undirected graph acted on by a cyclic group of symmetries which takes any vertex to any other vertex.} i.e. it has a circulant weight matrix.
+The argument for the graph Laplacian to be diabonizable with the DFT basis is simple: a) the graph Laplacian is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases. 
+More generally, higher dimension circles, such as the torus $\mathcal{C}^2$, have also a circulant weight matrix and hence their associated graph is also equipped with an equivariant convolution.
 
-Unfortunately there exist no regular sampling (for more than $12$ points) on the sphere $\mathcal{S}^2$. Hence it is not possible to build a circulant graph that cover all the sphere (except for the dense graph).
+We note two important points for the equivariance property to be carried on the graph convolution: a) the sampling needs to be regular, and b), the constructed graph has to be constructed circulant,\footnote{A circulant graph is an undirected graph acted on by a cyclic group of symmetries which takes any vertex to any other vertex.} i.e. it has a circulant weight matrix.
+Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of more than $12$ points. Hence it is in general not possible to build a graph with a convolution that is equivariant to rotation\footnote{The exception is the dense graph. Unfortunately, in the extreme case the graph convolution is limited to Kronkeker kernels, which makes it useless.}. 
 
 
 
