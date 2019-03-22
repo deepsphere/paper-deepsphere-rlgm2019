@@ -15,6 +15,7 @@
 
 
 
+\newtheorem{theorem}{Theorem}
 
 \newcommand{\figref}[1]{Figure~\ref{fig:#1}}
 \newcommand{\tabref}[1]{Table~\ref{tab:#1}}
@@ -142,36 +143,60 @@ While there exists many graph NNs (see for example xxx and xxx for recent review
 %\section{Spherical harmonics and equivariance}
 \section{Harmonics and equivariance}
 
-\todo{why equivalence to continuous provides equivariance. Clean way of doing it. Alternative: Renata's mechanical approach.}
-Proper study of symmetries and equivariance requires a continuous treatment.
-For example, only rotations by $90^\circ$ can be studied on a discrete sampling grid.
+% \todo{why equivalence to continuous provides equivariance. Clean way of doing it. Alternative: Renata's mechanical approach.}
 
-Known result: DFT = ring, DCT = path. Show some plots, the equations, cite the DCT paper.
-
-From the grid: cylinder, sphere, torus
+As both the graph and the traditional convolution can be expressed as a multiplication in the spectral/Fourier domain, the harmonic analyis of the graph Laplacian provides valuable insides on the equivariance property of the graph convolution. 
+The rational being that as the spectral bases allign, the convolution become more similar, with the consequence that the equivariance property of the trational convolution being carried out to the graph convolution. 
 
 
-sampling non-uniform, matrice circulante obligatoire...
 
+As an example, let us take a $1$-dimentional circle Manifold $\mathcal{C}^1$ embedded in a $2$-dimensional space as depicted in \figref{ring} and let us parametrize each point $(\cos\theta,\sin\theta)$ of $\mathcal{C}^1$ with the variable $\theta\in[0,2\pi[$.
+The harmonics, i.e. the eigenfunction of the Laplace-Beltrami operator, corresponding to the $\mathcal{C}^1$ can be expressed as $u_\ell(\theta)=e^{i \theta m \ell}$, for $\ell \in \mathbb{N}$ and $m\in\{-1,1\}$. 
+Interestingly, if one take a \emph{regular sampling} on the $\mathcal{C}^1$, as shown in \figref{ring}, the sampled eigenfunctions turn out to be the discrete fourier basis, meaning that the harmonic decomposition of a discretized function on the circle can be done using the well-known Discrete Fourier Transform (DFT). 
+It turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors graph Laplacian \cite{strang1999discrete}. Hence, in this case, it can be verified that both convolutions are equivalent under mild assumptions \footnote{See \cite[section 2.2 and Equation3]{perraudin2017stationary} for details.} 
+It should be noted that if an irregular sampling is selected, then the graph Fourier basis will not align the sampled manifold eigenvectors. 
 
-Mention boundary conditions: reflective by default, closed domains (sphere, torus)
-
-The graph setting used throughout this contribution corresponds to assumed reflective border conditions.
-While that is irrelevant when working on the complete sphere (as it has no border), it slightly affects the convolution operation when only a part of the sphere is considered.
-As depicted in \figref{border_effects}, a filter localized near a border (via $h(\L) \b \delta_i$) is no longer isotropic.
-These border effects can, however, be mitigated by padding with zeros a small area around the part of interest (in which case they become similar to border effects in classical CNNs).
-We however do not expect these effects to cause any problem as long as the data samples cover the same area.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=\linewidth]{border_effects}
-	\caption{Convolution kernel (also called filter) localized in the center and left corner of a graph built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$.
-		A filter $h$ is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution}, equation~\eqnref{graph_convolution_spatial}).
-	The filter is not isotropic anymore when localized on the corner as the graph representation of a manifold assumes reflective border conditions.}
-	\label{fig:border_effects}
+	\includegraphics[width=0.2\linewidth]{ring}
+	\caption{Circle $1$-dimentional Manifold embedded in a 2-dimentional space. Green: Manifold. Red: the regular sampled point and graph vertices. Blue: graph edges.}
+	\label{fig:ring}
 \end{figure}
 
+Proving that the DFT exponentials are graph Laplacian eigenvectors is a simple task given the fact that the graph weight matrix is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases. 
+The circle $\mathcal{C}^1$ is not the only manifold for which there exists a sampling such that the graph Laplacian eigenvetor correspond to the sampled harmonic.
+Higher dimension circle such as the torus $\mathcal{C}^2$ have the same property. 
+There are two common points in all of these examples: a) The sampling is regular, and b), the constructed graph is cirulant,\footnote{A circulant graph is an undirected graph acted on by a cyclic group of symmetries which takes any vertex to any other vertex.} i.e. it has a circulant weight matrix.
 
+Unfortunately there exist no regular sampling (for more than $12$ points) on the sphere $\mathcal{S}^2$. Hence it is not possible to build a circulant graph that cover all the sphere (except for the dense graph).
+
+
+
+% \subsection{Boundary conditions}
+
+% The graph setting used throughout this contribution corresponds to assumed reflective border conditions.
+% While that is irrelevant when working on the complete sphere (as it has no border), it slightly affects the convolution operation when only a part of the sphere is considered.
+% As depicted in \figref{border_effects}, a filter localized near a border (via $h(\L) \b \delta_i$) is no longer isotropic.
+% These border effects can, however, be mitigated by padding with zeros a small area around the part of interest (in which case they become similar to border effects in classical CNNs).
+% We however do not expect these effects to cause any problem as long as the data samples cover the same area.
+
+% \begin{figure}[ht!]
+% 	\centering
+% 	\includegraphics[width=\linewidth]{border_effects}
+% 	\caption{Convolution kernel (also called filter) localized in the center and left corner of a graph built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$.
+% 		A filter $h$ is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution}, equation~\eqnref{graph_convolution_spatial}).
+% 	The filter is not isotropic anymore when localized on the corner as the graph representation of a manifold assumes reflective border conditions.}
+% 	\label{fig:border_effects}
+% \end{figure}
+
+
+% Proper study of symmetries and equivariance requires a continuous treatment.
+% @Michael: Not necessarily. It is more complicated than that. For example, if you work in the spectral domain, you can bypass sampling problem. This is what happen with the work of Cohen. So I think we should not speak about that. 
+% For example, only rotations by $90^\circ$ can be studied on a discrete sampling grid.
+
+
+% \subsection{Convergence proof for random unform sampling}
 
 Let us use the angular parametrization of the sphere $\mathcal{S}^2=\{\bf{x} | \|\bf{x}\|_2=1 \}$, in term of angles of zenith, $\theta\in [0,\pi ]$, and azimuth $\phi\in [0,2\pi[$.
 \begin{equation}
@@ -179,47 +204,35 @@ Let us use the angular parametrization of the sphere $\mathcal{S}^2=\{\bf{x} | \
 \end{equation}
 Let $\mathcal(C)^\infty(\mathcal{S}^2)$ denote the class of infinitely differentiable functions $\mathcal{S}^2\rightarrow \mathbb{R}$. Using the agnular parametrization of the sphere, the Laplace-Beltrami for a function $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ is given by:
 \begin{equation}
-\nabla_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
+\Delta_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
 \end{equation}
 
-% \begin{equation}
-% \Lg \g{f}[i] := \frac{1}{n} \left( \g{f}[i]\sum_{j=1}^n k(x_i,x_j) -\sum_{j=1}^n \g{f}[j] k(x_i,x_j)\right)
-% \end{equation}
+Let us extend the graph Laplacian 
 
-For convergence we also need an extension operator:
-
-% It is a generalization of the graph Laplacian operator that apply on a function $\p{f}:\M \rightarrow \Rbb $:
-% \begin{equation}
-% \Lp \p{f}(y) := \frac{1}{n} \left( \p{f}(y)\sum_{j=1}^n k(y,x_j)-\sum_{j=1}^n \p{f}(x_j)k(y,x_j) \right)
-% \end{equation}
-
-
-% $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ and for a fixed point p \in M,
-% after appropriate scaling the operator Lt
-% n converges to the true Laplace–Beltrami operator on the manifold.
+\begin{equation}
+\L \b{f}[i] := \frac{1}{n} \left( \b{f}[i]\sum_{j=1}^n k_t(x_i,x_j) -\sum_{j=1}^n \b{f}[j] k_t(x_i,x_j)\right),
+\end{equation}
+where $k_t(x_i,x_j)=e^{-\frac{x_i-x_j}{4t}}$, \label{eq:full_graph_gaussian_weight}
+to each point on the Sphere.
+ 
+ It is a generalization of the graph Laplacian operator that apply on a function $f:\mathcal{S}^2 \rightarrow \mathbb{R} $:
+\begin{equation}
+L_t f(y) := \frac{1}{n} \left( f(y)\sum_{j=1}^n k_t(y,x_j)-\sum_{j=1}^n f(x_j)k_t(y,x_j) \right)
+\end{equation}
 
 
+ Given a function $f\in \mathcal{C}^\infty(\mathcal{S}^2)$ and for a fixed point $p \in \mathcal{C}^2$, after appropriate scaling the operator $L_t$, converge toward of the  Laplace–Beltrami operator.
 
-% Let us now focus on the convergence proofs. We consider a $k$-dimensional compact smooth manifold $\M$ embedded in $\Rbb^T$. The gradient of a $\mathcal{C}^1(\M)$ function $f$ evaluated in $\b{x}$ is given by $\grad_\M f(\b{x})$. It is a vector pointing in the direction of the fastest ascent of $f$. Note that the gradient evaluated in $\b{x}$ lives in the tangent space of the point $\b{x}$: $T_{\M}(\b{x}) \in \Rbb^k$. For convenience, we define the linear operator $\grad_{\G,v_i}$ to be the gradient vector at node $v_i$:
-% \begin{equation}
-% \left(\grad_{\G,v_i} \g{x}\right)[n] =
-% \frac{\partial x}{\partial e_{in}} 
-% = \sqrt{\Wg[i,n]} \left( \g{x}[n]-\g{x}[i] \right).
-% \end{equation}
-% Given a set of $N$ points $\{\b{x}_i\}_{i=1\dots N}$, we associate a complete weighted graph where each $\b{x}_i$ is associated to the vertex $v_i$ and we define the edges’ weights to be:
-% \begin{equation} \label{eq:full_graph_gaussian_weight}
-% \Weightf(v_i,v_n) = \Wg[i,n] = e^{\frac{\norm{\b{x}_i- \b{x}_n}_2^2}{4 t}},
-% \end{equation}
-% where $t$ is a positive constant depending on $N$. Using this special weight function, Belkin and Niogi have shown that the graph Laplacian converges to the Laplace-Beltrami operator of the manifold $\M$.
-% \begin{theorem}[Theorem 3.1 of~\cite{belkin2005towards}, Laplacian convergence] \label{theo:laplacian_convergence_belkin}
-% Let data points $\bf{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \Rbb^T$. Using the weight function \eqref{eq:full_graph_gaussian_weight}, define a sequence $t_N=N^{-\frac{1}{k+2+\alpha}}$, where $\alpha>0$ and let $f\in \mathcal{C}^\infty(\M)$, then the following holds:
-% \begin{equation}
-% \lim_{N \rightarrow \infty} \frac{1}{t_N(4\pi t_N)^{\frac{k}{2}}} (\Lg \b{f})[i] = \frac{1}{\vol (\M)} (\Lm f)(\b{x}_i)
-% \end{equation}
-% where the limit is taken in probability and $\vol(\M)$ is the volume of the manifold with respect to the canonical measure.
-% \end{theorem}
+\begin{theorem}[Adaptation of Theorem 3.1 of~\cite{belkin2005towards}, Laplacian convergence] \label{theo:laplacian_convergence_belkin}
+Let data points $\b{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \mathbb{R}^T$. 
+Using the weight function \eqref{eq:full_graph_gaussian_weight}, define a sequence $t_N=N^{-\frac{1}{4+\alpha}}$, where $\alpha>0$ and let $f\in \mathcal{C}^\infty(\mathcal{C}^2)$, then the following holds:
+\begin{equation}
+\lim_{N \rightarrow \infty} \frac{1}{t_N(4\pi t_N)} (L \b{f})[i] = \frac{1}{\text{vol} (\mathcal{C}^2)} (\Delta_{\mathcal{C}^2} f)(\b{x}_i)
+\end{equation}
+where the limit is taken in probability and $\text{vol}(\mathcal{C}^2)=4 \pi$ is the surface of the sphere with respect to the canonical measure.
+\end{theorem}
 
-
+\subsection{Empirical analysis of the graph eigenvectors}
 
 The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
 Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
