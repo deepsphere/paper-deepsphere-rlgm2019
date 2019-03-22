@@ -1,11 +1,60 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{iclr2019,times}
 
-% Optional math commands from https://github.com/goodfeli/dlbook_notation.
-\input{math_commands.tex}
+\usepackage{amssymb}
 
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{bm}
+\usepackage{graphicx,array} \graphicspath{{figures/}}
+\usepackage{amsmath}
+\usepackage{color}
+
+% % Optional math commands from https://github.com/goodfeli/dlbook_notation.
+% \input{math_commands.tex}
+
+
+
+
+\newcommand{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\tabref}[1]{Table~\ref{tab:#1}}
+\newcommand{\secref}[1]{Section~\ref{sec:#1}}
+%\newcommand{\secref}[1]{\S\ref{sec:#1}}
+\newcommand{\eqnref}[1]{(\ref{eqn:#1})}
+
+\renewcommand{\b}[1]{{\bm{#1}}}   % bold symbol
+
+% MATH SYMBOLS
+\newcommand{\1}{\b{1}}              % all-ones vector
+\newcommand{\0}{\b{0}}              % all-zero vector
+\newcommand{\g}[1]{\b{#1}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\B}{\mathcal{B}}
+\renewcommand{\L}{\b{L}}
+\newcommand{\tL}{\tilde{\L}}
+\newcommand{\W}{\b{W}}
+\newcommand{\I}{\b{I}}
+\newcommand{\D}{\b{D}}
+\newcommand{\U}{\b{U}}
+\newcommand{\x}{\b{x}}
+\newcommand{\X}{\b{X}}
+\newcommand{\y}{\b{y}}
+\newcommand{\Y}{\b{Y}}
+\newcommand{\bu}{\b{u}}
+\newcommand{\f}{\b{f}}
+\newcommand{\trans}{^\intercal}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bLambda}{\b{\Lambda}}
+\newcommand{\blambda}{\b{\lambda}}
+\newcommand{\bO}{\mathcal{O}}
+\newcommand{\T}{\mathcal{T}}
+\DeclareMathOperator*{\esp}{E}
+\DeclareMathOperator*{\var}{Var}
+\DeclareMathOperator*{\vect}{vec}
+\DeclareMathOperator*{\argmin}{arg \, min}
 
 \title{DeepSphere}
 % Keywords: equivariance, spherical CNN, graph NN
@@ -29,6 +78,7 @@ Zurich, Switzerland \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 \newcommand{\todo}[1]{{\color[rgb]{.6,.1,.6}{#1}}}
+\newcommand{\nati}[1]{{\color[rgb]{.1,.6,.1}{#1}}}
 
 %\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
@@ -100,9 +150,119 @@ Known result: DFT = ring, DCT = path. Show some plots, the equations, cite the D
 
 From the grid: cylinder, sphere, torus
 
+
+sampling non-uniform, matrice circulante obligatoire...
+
+
 Mention boundary conditions: reflective by default, closed domains (sphere, torus)
 
-\todo{Appendix A of cosmo paper}
+The graph setting used throughout this contribution corresponds to assumed reflective border conditions.
+While that is irrelevant when working on the complete sphere (as it has no border), it slightly affects the convolution operation when only a part of the sphere is considered.
+As depicted in \figref{border_effects}, a filter localized near a border (via $h(\L) \b \delta_i$) is no longer isotropic.
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest (in which case they become similar to border effects in classical CNNs).
+We however do not expect these effects to cause any problem as long as the data samples cover the same area.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=\linewidth]{border_effects}
+	\caption{Convolution kernel (also called filter) localized in the center and left corner of a graph built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$.
+		A filter $h$ is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution}, equation~\eqnref{graph_convolution_spatial}).
+	The filter is not isotropic anymore when localized on the corner as the graph representation of a manifold assumes reflective border conditions.}
+	\label{fig:border_effects}
+\end{figure}
+
+
+
+Let us use the angular parametrization of the sphere $\mathcal{S}^2=\{\bf{x} | \|\bf{x}\|_2=1 \}$, in term of angles of zenith, $\theta\in [0,\pi ]$, and azimuth $\phi\in [0,2\pi[$.
+\begin{equation}
+\Phi(\theta, \phi) = (\sin \theta \cos \phi, \sin \theta \sin \phi, \cos \theta )
+\end{equation}
+Let $\mathcal(C)^\infty(\mathcal{S}^2)$ denote the class of infinitely differentiable functions $\mathcal{S}^2\rightarrow \mathbb{R}$. Using the agnular parametrization of the sphere, the Laplace-Beltrami for a function $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ is given by:
+\begin{equation}
+\nabla_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
+\end{equation}
+
+% \begin{equation}
+% \Lg \g{f}[i] := \frac{1}{n} \left( \g{f}[i]\sum_{j=1}^n k(x_i,x_j) -\sum_{j=1}^n \g{f}[j] k(x_i,x_j)\right)
+% \end{equation}
+
+For convergence we also need an extension operator:
+
+% It is a generalization of the graph Laplacian operator that apply on a function $\p{f}:\M \rightarrow \Rbb $:
+% \begin{equation}
+% \Lp \p{f}(y) := \frac{1}{n} \left( \p{f}(y)\sum_{j=1}^n k(y,x_j)-\sum_{j=1}^n \p{f}(x_j)k(y,x_j) \right)
+% \end{equation}
+
+
+% $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ and for a fixed point p \in M,
+% after appropriate scaling the operator Lt
+% n converges to the true Laplace–Beltrami operator on the manifold.
+
+
+
+% Let us now focus on the convergence proofs. We consider a $k$-dimensional compact smooth manifold $\M$ embedded in $\Rbb^T$. The gradient of a $\mathcal{C}^1(\M)$ function $f$ evaluated in $\b{x}$ is given by $\grad_\M f(\b{x})$. It is a vector pointing in the direction of the fastest ascent of $f$. Note that the gradient evaluated in $\b{x}$ lives in the tangent space of the point $\b{x}$: $T_{\M}(\b{x}) \in \Rbb^k$. For convenience, we define the linear operator $\grad_{\G,v_i}$ to be the gradient vector at node $v_i$:
+% \begin{equation}
+% \left(\grad_{\G,v_i} \g{x}\right)[n] =
+% \frac{\partial x}{\partial e_{in}} 
+% = \sqrt{\Wg[i,n]} \left( \g{x}[n]-\g{x}[i] \right).
+% \end{equation}
+% Given a set of $N$ points $\{\b{x}_i\}_{i=1\dots N}$, we associate a complete weighted graph where each $\b{x}_i$ is associated to the vertex $v_i$ and we define the edges’ weights to be:
+% \begin{equation} \label{eq:full_graph_gaussian_weight}
+% \Weightf(v_i,v_n) = \Wg[i,n] = e^{\frac{\norm{\b{x}_i- \b{x}_n}_2^2}{4 t}},
+% \end{equation}
+% where $t$ is a positive constant depending on $N$. Using this special weight function, Belkin and Niogi have shown that the graph Laplacian converges to the Laplace-Beltrami operator of the manifold $\M$.
+% \begin{theorem}[Theorem 3.1 of~\cite{belkin2005towards}, Laplacian convergence] \label{theo:laplacian_convergence_belkin}
+% Let data points $\bf{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \Rbb^T$. Using the weight function \eqref{eq:full_graph_gaussian_weight}, define a sequence $t_N=N^{-\frac{1}{k+2+\alpha}}$, where $\alpha>0$ and let $f\in \mathcal{C}^\infty(\M)$, then the following holds:
+% \begin{equation}
+% \lim_{N \rightarrow \infty} \frac{1}{t_N(4\pi t_N)^{\frac{k}{2}}} (\Lg \b{f})[i] = \frac{1}{\vol (\M)} (\Lm f)(\b{x}_i)
+% \end{equation}
+% where the limit is taken in probability and $\vol(\M)$ is the volume of the manifold with respect to the canonical measure.
+% \end{theorem}
+
+
+
+The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
+Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
+Its eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
+We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
+In order to push the comparison one step further, we show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
+%The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=\linewidth]{graph_eigenvalues}
+	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. 
+	See also \figref{graph_harmonics}.
+	}
+	\label{fig:graph_eigenvalues}
+\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors_v2}
+	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics.
+		The correspondance is computed in two steps. (i) We compute the PSD of each graph eigenvector.
+		(ii) As, for each harmonic index $\ell$, there is $2\ell+1$ spherical harmonics, we sum the contribution of the corresponding $2\ell+1$ graph eigenvectors.
+		% No real convergence with increasing Nside.
+		% Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
+		% (\figref{graph_eigenvalues} shows how Fourier modes can be identified to spherical degrees.)
+		% The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
+		% Pixel $k$ in row $j$ measures the energy in frequency band $k$ of the graph Fourier modes identified to be part of band $j$.
+		The matrix should ideally be the identity.
+		While not the case, the plot shows how the subspaces agree: the subspaces spanned by the Fourier modes correspond to those spanned by the spherical harmonics in the low frequencies, while the Fourier modes leak towards adjacent frequency bands in the high frequencies.
+		While there is a systematic error, the Fourier modes agree at higher frequencies as $N_{side}$ increases.}
+		\label{fig:subspace_harmonics_eigenvectors}
+\end{figure}
+
+While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
+First, we believe that they are responsible for energy leaking across frequency bands in \figref{subspace_harmonics_eigenvectors}.
+Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
+% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
+The theoretical study of those phenomenons is left as future work.
+Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
+Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
+Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the NN.
+
 
 \todo{new results from Martino: becomes better in BN setting, currently under study}
 
