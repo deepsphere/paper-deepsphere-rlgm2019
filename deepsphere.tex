@@ -8,10 +8,11 @@
 \usepackage{graphicx,array} \graphicspath{{figures/}}
 \usepackage{amsmath}
 \usepackage{color}
+\usepackage{caption}
+\usepackage{subcaption}
 
 % % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 % \input{math_commands.tex}
-
 
 
 
@@ -137,7 +138,6 @@ masked data is a pain for ML in general (with graphs, we can just make it disapp
 		%\todo{colorbar for brain}
 	}
 	\label{fig:spherical_data_examples}
-  \end{minipage}
 \end{figure}
 \footnotetext{\url{https://www.ncdc.noaa.gov/ghcn-daily-description}}
 \footnotetext{Example data from MNE, \url{https://martinos.org/mne/stable/auto_tutorials/plot_visualize_evoked.html}.}
@@ -201,13 +201,6 @@ It turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors g
 It should be noted that if an irregular sampling is selected, then the graph Fourier basis will not align the sampled manifold eigenvectors. 
 
 
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.2\linewidth]{ring}
-	\caption{Circle $1$-dimentional Manifold embedded in a 2-dimentional space. Green: Manifold. Red: the regular sampled point and graph vertices. Blue: graph edges.}
-	\label{fig:ring}
-\end{figure}
-
 Proving that the DFT exponentials are graph Laplacian eigenvectors is a simple task given the fact that the graph weight matrix is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases. 
 The circle $\mathcal{C}^1$ is not the only manifold for which there exists a sampling such that the graph Laplacian eigenvetor correspond to the sampled harmonic.
 Higher dimension circle such as the torus $\mathcal{C}^2$ have the same property. 
@@ -242,39 +235,39 @@ Unfortunately there exist no regular sampling (for more than $12$ points) on the
 
 % \subsection{Convergence proof for random unform sampling}
 
-Let us use the angular parametrization of the sphere $\mathcal{S}^2=\{\bf{x} | \|\bf{x}\|_2=1 \}$, in term of angles of zenith, $\theta\in [0,\pi ]$, and azimuth $\phi\in [0,2\pi[$.
-\begin{equation}
-\Phi(\theta, \phi) = (\sin \theta \cos \phi, \sin \theta \sin \phi, \cos \theta )
-\end{equation}
-Let $\mathcal(C)^\infty(\mathcal{S}^2)$ denote the class of infinitely differentiable functions $\mathcal{S}^2\rightarrow \mathbb{R}$. Using the agnular parametrization of the sphere, the Laplace-Beltrami for a function $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ is given by:
-\begin{equation}
-\Delta_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
-\end{equation}
+% Let us use the angular parametrization of the sphere $\mathcal{S}^2=\{\bf{x} | \|\bf{x}\|_2=1 \}$, in term of angles of zenith, $\theta\in [0,\pi ]$, and azimuth $\phi\in [0,2\pi[$.
+% \begin{equation}
+% \Phi(\theta, \phi) = (\sin \theta \cos \phi, \sin \theta \sin \phi, \cos \theta )
+% \end{equation}
+% Let $\mathcal(C)^\infty(\mathcal{S}^2)$ denote the class of infinitely differentiable functions $\mathcal{S}^2\rightarrow \mathbb{R}$. Using the agnular parametrization of the sphere, the Laplace-Beltrami for a function $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ is given by:
+% \begin{equation}
+% \Delta_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
+% \end{equation}
 
-Let us extend the graph Laplacian 
+% Let us extend the graph Laplacian 
 
-\begin{equation}
-\L \b{f}[i] := \frac{1}{n} \left( \b{f}[i]\sum_{j=1}^n k_t(x_i,x_j) -\sum_{j=1}^n \b{f}[j] k_t(x_i,x_j)\right),
-\end{equation}
-where $k_t(x_i,x_j)=e^{-\frac{x_i-x_j}{4t}}$, \label{eq:full_graph_gaussian_weight}
-to each point on the Sphere.
+% \begin{equation}
+% \L \b{f}[i] := \frac{1}{n} \left( \b{f}[i]\sum_{j=1}^n k_t(x_i,x_j) -\sum_{j=1}^n \b{f}[j] k_t(x_i,x_j)\right),
+% \end{equation}
+% where $k_t(x_i,x_j)=e^{-\frac{x_i-x_j}{4t}}$, \label{eq:full_graph_gaussian_weight}
+% to each point on the Sphere.
  
- It is a generalization of the graph Laplacian operator that apply on a function $f:\mathcal{S}^2 \rightarrow \mathbb{R} $:
-\begin{equation}
-L_t f(y) := \frac{1}{n} \left( f(y)\sum_{j=1}^n k_t(y,x_j)-\sum_{j=1}^n f(x_j)k_t(y,x_j) \right)
-\end{equation}
+%  It is a generalization of the graph Laplacian operator that apply on a function $f:\mathcal{S}^2 \rightarrow \mathbb{R} $:
+% \begin{equation}
+% L_t f(y) := \frac{1}{n} \left( f(y)\sum_{j=1}^n k_t(y,x_j)-\sum_{j=1}^n f(x_j)k_t(y,x_j) \right)
+% \end{equation}
 
 
- Given a function $f\in \mathcal{C}^\infty(\mathcal{S}^2)$ and for a fixed point $p \in \mathcal{C}^2$, after appropriate scaling the operator $L_t$, converge toward of the  Laplace–Beltrami operator.
+%  Given a function $f\in \mathcal{C}^\infty(\mathcal{S}^2)$ and for a fixed point $p \in \mathcal{C}^2$, after appropriate scaling the operator $L_t$, converge toward of the  Laplace–Beltrami operator.
 
-\begin{theorem}[Adaptation of Theorem 3.1 of~\cite{belkin2005towards}, Laplacian convergence] \label{theo:laplacian_convergence_belkin}
-Let data points $\b{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \mathbb{R}^T$. 
-Using the weight function \eqref{eq:full_graph_gaussian_weight}, define a sequence $t_N=N^{-\frac{1}{4+\alpha}}$, where $\alpha>0$ and let $f\in \mathcal{C}^\infty(\mathcal{C}^2)$, then the following holds:
-\begin{equation}
-\lim_{N \rightarrow \infty} \frac{1}{t_N(4\pi t_N)} (L \b{f})[i] = \frac{1}{\text{vol} (\mathcal{C}^2)} (\Delta_{\mathcal{C}^2} f)(\b{x}_i)
-\end{equation}
-where the limit is taken in probability and $\text{vol}(\mathcal{C}^2)=4 \pi$ is the surface of the sphere with respect to the canonical measure.
-\end{theorem}
+% \begin{theorem}[Adaptation of Theorem 3.1 of~\cite{belkin2005towards}, Laplacian convergence] \label{theo:laplacian_convergence_belkin}
+% Let data points $\b{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \mathbb{R}^T$. 
+% Using the weight function \eqref{eq:full_graph_gaussian_weight}, define a sequence $t_N=N^{-\frac{1}{4+\alpha}}$, where $\alpha>0$ and let $f\in \mathcal{C}^\infty(\mathcal{C}^2)$, then the following holds:
+% \begin{equation}
+% \lim_{N \rightarrow \infty} \frac{1}{t_N(4\pi t_N)} (L \b{f})[i] = \frac{1}{\text{vol} (\mathcal{C}^2)} (\Delta_{\mathcal{C}^2} f)(\b{x}_i)
+% \end{equation}
+% where the limit is taken in probability and $\text{vol}(\mathcal{C}^2)=4 \pi$ is the surface of the sphere with respect to the canonical measure.
+% \end{theorem}
 
 \subsection{Empirical analysis of the graph eigenvectors}
 
@@ -285,18 +278,28 @@ We remind the reader that the amplitude of the Laplacian eigenvalue is proportio
 In order to push the comparison one step further, we show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
 %The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 
-\begin{figure}[t!]
+\begin{figure}[ht!]
+\centering
+\begin{minipage}{.2\textwidth}
+	\centering
+	\includegraphics[width=\linewidth]{ring}
+	\captionof{figure}{Circle $1$-dimentional Manifold embedded in a 2-dimentional space. Green: Manifold. Red: the regular sampled point and graph vertices. Blue: graph edges.}
+	\label{fig:ring}
+\end{minipage}
+\hspace{1cm}
+\begin{minipage}{.7\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{graph_eigenvalues}
-	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. 
+	\captionof{figure}{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. 
 	See also \figref{graph_harmonics}.
 	}
 	\label{fig:graph_eigenvalues}
+\end{minipage}
 \end{figure}
 
-\begin{figure}[t!]
+\begin{figure}[ht!]
 	\centering
-	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors_v2}
+	\includegraphics[width=0.9\linewidth]{subspace_harmonics_eigenvectors_v2}
 	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics.
 		The correspondance is computed in two steps. (i) We compute the PSD of each graph eigenvector.
 		(ii) As, for each harmonic index $\ell$, there is $2\ell+1$ spherical harmonics, we sum the contribution of the corresponding $2\ell+1$ graph eigenvectors.
