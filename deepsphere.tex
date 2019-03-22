@@ -289,7 +289,7 @@ For $N_{side}=4$, we clearly observe a good allignment for $\ell\leq 8$. This me
 % one should not forget that 
 The imperfection in the allignment is likely due to the small irregularities in the HEALPix sampling (non-constant number of neighboring pixels and varying distance between pixels, \todo{see \figref{healpix_graph_4})} have an important effect on the graph Fourier modes.
 % First, we believe that they are responsible for energy leaking across frequency bands in \figref{subspace_harmonics_eigenvectors}.
-Furthermore, the graph construction scheme might not be optimal as the resulting Laplacian is probably far from circulant.
+Furthermore, the graph construction scheme might not be optimal as the resulting Laplacian is probably far from circulant. One construction scheme that might be more adapted is a fully connected graph as this scheme is used in convergence proof in \cite{belkin2005towards,belkin2007convergence}.
 % Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
 % We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
 % The theoretical study of those phenomenons is left as future work.
