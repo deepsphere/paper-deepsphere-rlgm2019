@@ -283,6 +283,19 @@ The graph Laplacian eigenvalues, shown in \figref{graph_eigenvalues}, are clearl
 These blocks corresponds to the different eigenspaces of the spherical harmonics.
 We also show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
 %The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
+For $N_{side}=4$, we clearly observe a good allignment for $\ell\leq 8$. This mean that for kernel with low frequencies, the graph convolution will be rotational equivariant. On the contrary, a kernel with higher frequencies ($\ell>8$) will not be.
+
+% While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, 
+% one should not forget that 
+The imperfection in the allignment is likely due to the small irregularities in the HEALPix sampling (non-constant number of neighboring pixels and varying distance between pixels, \todo{see \figref{healpix_graph_4})} have an important effect on the graph Fourier modes.
+% First, we believe that they are responsible for energy leaking across frequency bands in \figref{subspace_harmonics_eigenvectors}.
+Furthermore, the graph construction scheme might not be optimal as the resulting Laplacian is probably far from circulant.
+% Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
+% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
+% The theoretical study of those phenomenons is left as future work.
+% Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
+% Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
+% Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the NN.
 
 \begin{figure}[ht!]
 \centering
@@ -320,14 +333,6 @@ We also show the correspondence between the subspaces spanned by the graph Fouri
 		\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
-While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
-First, we believe that they are responsible for energy leaking across frequency bands in \figref{subspace_harmonics_eigenvectors}.
-Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
-% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
-The theoretical study of those phenomenons is left as future work.
-Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
-Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
-Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the NN.
 
 
 \todo{new results from Martino: becomes better in BN setting, currently under study}
