@@ -1,8 +1,7 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{iclr2019,times}
-
 \usepackage{amssymb}
-
+\usepackage{float}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{bm}
@@ -12,9 +11,6 @@
 
 % % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 % \input{math_commands.tex}
-
-
-
 
 \newcommand{\figref}[1]{Figure~\ref{fig:#1}}
 \newcommand{\tabref}[1]{Table~\ref{tab:#1}}
@@ -113,6 +109,34 @@ As there is no equivalent to the uniform sampling of Euclidean space on the sphe
 \todo{there is a compromise about the sampling quality (how far from uniform) and how close discrete computations can be made to the true continuous ones}
 masked data is a pain for ML in general (with graphs, we can just make it disappear)
 
+\begin{figure}
+	\includegraphics[height=0.3\linewidth]{example_cosmo_cmb}
+	\hfill
+	\includegraphics[height=0.3\linewidth]{example_ghcn_daily_tmax}
+	\hfill
+	\includegraphics[height=0.3\linewidth]{example_brain_meg}
+	\caption{
+		Examples of real data on the sphere: (left) the cosmic microwave background (CMB) temperature (K) map from Planck \citep{planck2015overview} with galactic plane masked, (middle) daily maximum temperature from the Global Historical Climatology Network (GHCN),\protect\footnotemark (right) brain activity recorded through magnetoencephalography (MEG).\protect\footnotemark
+		Spherical data can be seen as a continuous function $f: S^2 \rightarrow \R^d$ that is sampled at discrete positions.
+		%is sampled at convenient points, given by a chosen pixelization.
+		While the sampling points can be precisely controlled in some cases (like the CCD or CMOS sensors of an omni-directional camera),
+		%data is measured where the sensors are.
+		% projections on the sphere, like SHREC-17 (though that's quite artificial)
+		sensors might in general be non-uniformly distributed, and cover only part of the surface.
+		In our examples, the position of temperature sensors cannot be globally controlled, brain activity is measured on the scalp only, and the Milky Way's galactic plane masks our observation of the CMB.
+		Moreover, the sampling set might change across signals (for example, temperature sensors were added and removed throughout the survey).
+		Modeling the sampled sphere as a discrete graph has the potential to faithfully and efficiently represent sampled spherical data: vertices only exist where data has been measured.
+		No need to handle missing data, no need to interpolate to some predefined sampling, no waste of memory or precision due to over- or under-sampling.
+		%\todo{something from climate?}
+		%\todo{compare ideal full-spheres (like SHREC-17 projection from Esteves, 360 from Coors) to real-world measurements?}
+		%\todo{colorbar for brain}
+	}
+	\label{fig:spherical_data_examples}
+  \end{minipage}
+\end{figure}
+\footnotetext{\url{https://www.ncdc.noaa.gov/ghcn-daily-description}}
+\footnotetext{Example data from MNE, \url{https://martinos.org/mne/stable/auto_tutorials/plot_visualize_evoked.html}.}
+
 \todo{Most of our view is shaped by cosmo. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems the most advanced for SP on the sphere.}
 
 \todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
@@ -130,6 +154,22 @@ $S^2 = SO(3) / SO(2) (/ = modulo)$
 $S^2$ is an homogeneous space of $SO(3)$.
 
 \section{Method}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figure_architecture_v3}
+	\caption{Overall NN architecture, showing here three convolutional layers acting as feature extractors followed by three fully connected layers with softmax acting as the classifier.
+    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling.
+	While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted.
+	In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph.
+	Graphs are versatile data structures which can model any sampling, even irregular or partial.
+	Second, we propose to exploit a hierarchical pixelization of the sphere for the down-sampling operation.
+	It allows the NN to analyze the data at multiple scales while preserving the spatial localization of features.
+	This figure shows a network that operates on the whole sphere.
+	The process is the same when working with partial observations, except that the graph is only built for the region of interest.}
+	\label{fig:architecture}
+\end{figure}
+
 
 In this work, we use the graph neural network proposed by \citet{defferrard2016gnn}.
 While there exists many graph NNs (see for example xxx and xxx for recent reviews),
