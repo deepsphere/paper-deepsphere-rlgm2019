@@ -189,21 +189,22 @@ While there exists many graph NNs (see for example xxx and xxx for recent review
 
 % \todo{why equivalence to continuous provides equivariance. Clean way of doing it. Alternative: Renata's mechanical approach.}
 
+\paragraph{Why is the harmonic analysis of the graph important for equivariance?} 
 As both the graph and the spherical convolution can be expressed as a multiplication in the Fourier domain, the spectral analysis of the graph Laplacian provides valuable insights on the equivariance property of the graph convolution. 
 The rationale being that as the spectral bases align, the two operations become more similar, with the consequence that the equivariance property of the spherical convolution being carried out to the graph convolution. 
 
 
-
+\paragraph{Example:} 
 In order to better understand this process, let us study the circle Manifold $\mathcal{C}^1$ as depicted in \figref{ring}. We parametrize each point $(\cos\theta,\sin\theta)$ of $\mathcal{C}^1$ with the variable $\theta\in[0,2\pi[$.
 For this manifold, the eigenfunctions of the Laplace-Beltrami operator can be expressed as $u_\ell(\theta)=e^{i \theta m \ell}$, for $\ell \in \mathbb{N}$ and $m\in\{-1,1\}$. 
 Interestingly, if one selects a \emph{regular sampling} on the $\mathcal{C}^1$, as shown in \figref{ring}, the sampled eigenfunctions turn out to be the discrete Fourier basis, meaning that the harmonic decomposition of a discretized function on the circle can be done using the well-known Discrete Fourier Transform (DFT). 
 In this case, it turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors graph Laplacian \cite{strang1999discrete}. Hence, in the $\mathcal{C}^1$ case, it can be verified, under mild assumptions, that the graph convolution is equivariant to translation\footnote{See \cite[section 2.2 and Equation3]{perraudin2017stationary} for details.}  
 It should be noted that if an irregular sampling is selected, then the graph Fourier basis will not align the sampled manifold eigenvectors. 
 
-
 The argument for the graph Laplacian to be diabonizable with the DFT basis is simple: a) the graph Laplacian is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases. 
 More generally, higher dimension circles, such as the torus $\mathcal{C}^2$, have also a circulant weight matrix and hence their associated graph is also equipped with an equivariant convolution.
 
+\paragraph{Necessary conditions for the rotational equivariance on the sphere}
 We note two important points for the equivariance property to be carried on the graph convolution: a) the sampling needs to be regular, and b), the constructed graph has to be constructed circulant,\footnote{A circulant graph is an undirected graph acted on by a cyclic group of symmetries which takes any vertex to any other vertex.} i.e. it has a circulant weight matrix.
 Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of more than $12$ points. Hence it is in general not possible to build a graph with a convolution that is equivariant to rotation\footnote{The exception is the dense graph. Unfortunately, in the extreme case the graph convolution is limited to Kronkeker kernels, which makes it useless.}. 
 
@@ -268,13 +269,19 @@ Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of m
 % where the limit is taken in probability and $\text{vol}(\mathcal{C}^2)=4 \pi$ is the surface of the sphere with respect to the canonical measure.
 % \end{theorem}
 
-\subsection{Empirical analysis of the graph eigenvectors}
+% \subsection{Empirical analysis of the graph eigenvectors}
 
-The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
-Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
-Its eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
-We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
-In order to push the comparison one step further, we show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
+% The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
+
+\paragraph{Empirical analysis of DeepSphere graph Laplacian:} 
+% Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
+Given the graph used for DeepSphere, let us analyse the spectral alignment of the graph Fourier basis and the spherical harmonics.
+The graph Laplacian eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
+% We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector.
+% Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. 
+% Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
+These blocks corresponds to the different eigenspaces of the spherical harmonics.
+We also show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
 %The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 
 \begin{figure}[ht!]
@@ -282,7 +289,7 @@ In order to push the comparison one step further, we show the correspondence bet
 \begin{minipage}{.2\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{ring}
-	\captionof{figure}{Circle $1$-dimentional Manifold embedded in a 2-dimentional space. Green: Manifold. Red: the regular sampled point and graph vertices. Blue: graph edges.}
+	\captionof{figure}{Green: Circle Manifold $\mathcal{C}^1$. Red: the regular sampled points and graph vertices. Blue: graph edges.}
 	\label{fig:ring}
 \end{minipage}
 \hspace{1cm}
