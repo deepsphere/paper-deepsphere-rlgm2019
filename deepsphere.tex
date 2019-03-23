@@ -14,13 +14,14 @@
 % % Optional math commands from https://github.com/goodfeli/dlbook_notation.
 % \input{math_commands.tex}
 
-
-
 \newtheorem{theorem}{Theorem}
 
-\newcommand{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\figref}[1]{figure~\ref{fig:#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}}
 \newcommand{\tabref}[1]{Table~\ref{tab:#1}}
+\newcommand{\Tabref}[1]{table~\ref{tab:#1}}
 \newcommand{\secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\Secref}[1]{section~\ref{sec:#1}}
 %\newcommand{\secref}[1]{\S\ref{sec:#1}}
 \newcommand{\eqnref}[1]{(\ref{eqn:#1})}
 
@@ -35,6 +36,9 @@
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\B}{\mathcal{B}}
+%\newcommand{\circle}{\mathcal{C}^1}
+\newcommand{\torus}{\mathcal{C}^2}
+\newcommand{\sphere}{\mathcal{S}^2}
 \renewcommand{\L}{\b{L}}
 \newcommand{\tL}{\tilde{\L}}
 \newcommand{\W}{\b{W}}
@@ -61,6 +65,7 @@
 \title{DeepSphere}
 % Keywords: equivariance, spherical CNN, graph NN
 %\title{DeepSphere: an equivariant spherical CNN based on a graph NN}
+%\title{DeepSphere: a graph-based equivariant spherical CNN}
 % Exploiting symmetries with Graph Neural Networks
 % Another reason to use Graph Neural Networks: exploiting symmetries
 % Another case for Graph Neural Networks: exploiting symmetries
@@ -88,75 +93,98 @@ Zurich, Switzerland \\
 \maketitle
 
 \begin{abstract}
-	\todo{TODO:
-		\begin{enumerate}
-			\item add figures from DeepSphere cosmo
-			\item reorganize thoughts
-			\item fill the holes
-			\item coherent and consistent story
-		\end{enumerate}
-	}
+	Spherical data is found in many applications.
+	By modeling the discretized sphere as a graph, we can accommodate non-uniformly distributed, partial, and changing samplings.
+	Moreover, graph convolutions are computationally more efficient than spherical convolutions.
+	As equivariance is desired to exploit rotational symmetries, we present preliminary results on the rotation equivariance of the graph neural network introduced in \citet{defferrard2016gnn}.
+	Experiments show good performance on rotation-invariant learning problems.
 \end{abstract}
 
-\section{Introduction}
-
-There has been a lot of interest recently [xx] in studying and developing NN architectures that exploit symmetries in the data by being equivariant (or invariant) to a select group of symmetric transformations (symmetry group).
-In this paper, we argue that graph neural networks are a flexible model (albeit not the most general) to exploit such symmetries.
-graphs are a great support for computations on many domains.
-
-%\section{Related Work}
-\todo{Related work as a paragraph. Mention interest in spherical CNNs for various applications, importance of equivariance and invariance, previous exploratory work from Renata and ourselves.}
-
-As there is no equivalent to the uniform sampling of Euclidean space on the sphere, sphere pixelizations have been engineered to have some characteristics: equirectangular (a.k.a. equiangular or geographic) is simple\footnote{It is used in most spherical CNNs cite Cohen, renata, esteves}. HEALPix is equal-area\footnote{That is important for white noise to stay white.}, hierarchical, and has a fast SHT \citep{healpix}, GLESP features an exact (to machine precision) SHT \citep{glesp}, sympix?, cubed-sphere?.
-\todo{look at the wording in sympix}
-\todo{maybe have a table, or a list of desired properties from a sampling}
-
-\todo{What is the problem we want to solve? Identify it. Our solution: allow any sampling, flexibility.}
-\todo{there is a compromise about the sampling quality (how far from uniform) and how close discrete computations can be made to the true continuous ones}
-masked data is a pain for ML in general (with graphs, we can just make it disappear)
-
-\begin{figure}
+\begin{figure}[h]
 	\includegraphics[height=0.3\linewidth]{example_cosmo_cmb}
 	\hfill
 	\includegraphics[height=0.3\linewidth]{example_ghcn_daily_tmax}
 	\hfill
 	\includegraphics[height=0.3\linewidth]{example_brain_meg}
 	\caption{
-		Examples of real data on the sphere: (left) the cosmic microwave background (CMB) temperature (K) map from Planck \citep{planck2015overview} with galactic plane masked, (middle) daily maximum temperature from the Global Historical Climatology Network (GHCN),\protect\footnotemark (right) brain activity recorded through magnetoencephalography (MEG).\protect\footnotemark
-		Spherical data can be seen as a continuous function $f: S^2 \rightarrow \R^d$ that is sampled at discrete positions.
-		%is sampled at convenient points, given by a chosen pixelization.
-		While the sampling points can be precisely controlled in some cases (like the CCD or CMOS sensors of an omni-directional camera),
-		%data is measured where the sensors are.
-		% projections on the sphere, like SHREC-17 (though that's quite artificial)
-		sensors might in general be non-uniformly distributed, and cover only part of the surface.
-		In our examples, the position of temperature sensors cannot be globally controlled, brain activity is measured on the scalp only, and the Milky Way's galactic plane masks our observation of the CMB.
-		Moreover, the sampling set might change across signals (for example, temperature sensors were added and removed throughout the survey).
-		Modeling the sampled sphere as a discrete graph has the potential to faithfully and efficiently represent sampled spherical data: vertices only exist where data has been measured.
-		No need to handle missing data, no need to interpolate to some predefined sampling, no waste of memory or precision due to over- or under-sampling.
-		%\todo{something from climate?}
+		Examples of real data on the sphere: (left) the cosmic microwave background (CMB) temperature from \citet{planck2015overview},
+		%with galactic plane masked
+		(middle) daily maximum temperature from the Global Historical Climatology Network (GHCN),\protect\footnotemark (right) brain activity recorded through magnetoencephalography (MEG).\protect\footnotemark
+		For those examples, a rigid full-sphere pixelization is not ideal: the Milky Way's galactic plane masks observations, brain activity is measured on the scalp only, and the position and density of temperature sensors is arbitrary and changes over time.
+		%\todo{something from climate, weather?}
 		%\todo{compare ideal full-spheres (like SHREC-17 projection from Esteves, 360 from Coors) to real-world measurements?}
-		%\todo{colorbar for brain}
+		%\todo{horizontal colorbar for brain}
 	}
-	\label{fig:spherical_data_examples}
+	\label{fig:examples}
 \end{figure}
-\footnotetext{\url{https://www.ncdc.noaa.gov/ghcn-daily-description}}
-\footnotetext{Example data from MNE, \url{https://martinos.org/mne/stable/auto_tutorials/plot_visualize_evoked.html}.}
+\footnotetext{\scriptsize\url{https://www.ncdc.noaa.gov/ghcn-daily-description}}
+\footnotetext{\scriptsize\url{https://martinos.org/mne/stable/auto_tutorials/plot_visualize_evoked.html}}
 
-\todo{Most of our view is shaped by cosmo. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems the most advanced for SP on the sphere.}
+\section{Introduction}
 
-\todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
+% \todo{sphere only, or start more general?}
+% 1. general
+% 2. sphere
+% 3. equivariance to symmetries (we might not necessary want that)
 
-\todo{From \citet{kondor2018equivariance}:
-* convolution implies equivariance to the action of some group
-* to be equivariant (to exploit symmetries in the data), you need convolution
-* often easier to describe in Fourier space => motivation for the spectral interpretation?
-}
+% \todo{What is the problem we want to solve? Identify it. Our solution: flexible (any sampling) and computational efficient.}
 
-\subsection{The sphere}
+% \todo{Related work: mention interest in spherical CNNs for various applications, importance of equivariance and invariance, previous exploratory work with graphs from Renata and ourselves.}
 
-$S^2 = SO(3) / SO(2) (/ = modulo)$
+Graphs have long been used as models for discretized manifolds: for example to smooth meshes \citep{taubin1996meshsmoothing}, reduce dimensionality \citep{belkin2003laplacian}, and, more recently, to process signals \citep{shuman2013gsp}.
+In most works, it is assumed that the true data manifold is unknown to the processing or learning method, and is only observed through discrete samples.
+In this contribution, we want to make a case for using graphs as a support of computation on known manifolds.\footnote{For example, the plane where images live is known, while the true surface of a point cloud is unknown.}
 
-$S^2$ is an homogeneous space of $SO(3)$.
+%From now on, we focus on the sphere.
+Along
+%$d$-dimensional
+Euclidean spaces, the sphere is one of the most commonly encountered manifold: it is notably used to represent omnidirectional images, global weather and climate data, cosmological observations, and brain activity measured on the scalp (see \figref{examples}).
+Spherical convolutional neural networks (CNNs) have been developed to work with most of those modalities \citep{cohen2018sphericalcnn, esteves2017sphericalcnn, perraudin2018deepsphere, khasanova2017graphomni, boomsma2017sphericalcnn, su2017sphericalcnn, coors2018sphericalcnn,
+% kondor2018sphericalcnn, => quite specific, same applications as Cohen
+jiang2019sphericalcnn}.
+
+% why graphs for the sphere
+Spherical data can be seen as a continuous function
+%$f: S^2 \rightarrow \R^d$
+that is sampled at discrete locations.
+%is sampled at convenient points, given by a chosen pixelization.
+As it is impossible to construct a regular discretization of the sphere, there is no perfect spherical sampling.
+Schemes have been engineered for particular applications and come with trade-offs \citep{healpix, glesp}.
+%emphasizing one or more features at the cost of others.
+% For example, the equirectangular (a.k.a.\ equiangular or geographic) grid, used in most spherical CNNs, is most similar to a 2D grid.
+% HEALPix features equal-area and hierarchically organized pixels, and has a fast spherical harmonic transform (SHT) \citep{healpix}.
+% GLESP features a fast and exact
+% %(to machine precision)
+% SHT \citep{glesp}.
+% sympix?, cubed-sphere? => no space
+%\todo{maybe have a table, or a list of desired properties from a sampling} => no space
+However, while sampling locations can be precisely controlled in some cases (like the CMOS sensors of an omni-directional camera), sensors might in general be non-uniformly distributed, cover only part of the sphere, and move (see \figref{examples}).
+Modeling the sampled sphere as a discrete graph has the potential to faithfully and efficiently represent sampled spherical data by placing vertices where data has been measured: no need to handle missing data or to interpolate to some predefined sampling, and no waste of memory or precision due to over- or under-sampling.
+Graph-based spherical CNNs have been proposed in \citet{khasanova2017graphomni} and \citet{perraudin2018deepsphere}.
+Moreover, graph convolutions have a lower computational cost of $\bO(N_{pix})$ compared to $\bO(N_{pix}^{2/3})$ for the SHT-based convolutions of \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, where $N_{pix}$ is the number of considered pixels.
+
+%\todo{Most of our views are shaped by cosmology. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems however the most advanced for SP on the sphere.}
+
+%As the sphere $\mathcal{S}^2$ is a homogeneous space of the 3D rotation group $SO(3)$.
+
+% Finally, to exploit the rotation symmetry of certain tasks involving spherical data, we would like a rotation equivariant formulation \citep{cohen2016equivariance}.
+% speak about symmetries in the conclusion
+
+Finally, like classical 2D CNNs are equivariant to translations, we want spherical CNNs to be equivariant to 3D rotations \citep{cohen2016equivariance, kondor2018equivariance}.
+% we'll nuance this view in the conclusion
+A rotation-equivariant CNN detects patterns regardless of how they are rotated on the sphere: they exploit the rotational symmetries of the data through weight sharing.
+Realizing that, spheres can be used to support data which does not intrinsically live on a sphere but have rotational symmetries \citep[for 3D objects and molecules]{cohen2018sphericalcnn, esteves2017sphericalcnn}.
+In this contribution, we discuss preliminary results on the equivariance to rotations of graph convolutions, when the graph models the sphere.
+
+% \todo{From \citet{kondor2018equivariance}:
+% A convolution implies the equivariance to the action of some group.
+% Contrary as well: equivariance requires a convolution structure.
+% }
+
+% \begin{figure}
+% 	% three figures: healpix, glesp, graph
+% 	\label{fig:samplings}
+% \end{figure}
 
 \section{Method}
 
@@ -175,6 +203,7 @@ $S^2$ is an homogeneous space of $SO(3)$.
 	\label{fig:architecture}
 \end{figure}
 
+\todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
 
 In this work, we use the graph neural network proposed by \citet{defferrard2016gnn}.
 While there exists many graph NNs (see for example xxx and xxx for recent reviews),
@@ -188,25 +217,27 @@ While there exists many graph NNs (see for example xxx and xxx for recent review
 \section{Harmonics and equivariance}
 
 % \todo{why equivalence to continuous provides equivariance. Clean way of doing it. Alternative: Renata's mechanical approach.}
+often easier to describe in Fourier space \citep{kondor2018equivariance} => motivation for the spectral interpretation?
 
-\paragraph{Why is the harmonic analysis of the graph important for equivariance?} 
-As both the graph and the spherical convolution can be expressed as a multiplication in the Fourier domain, the spectral analysis of the graph Laplacian provides valuable insights on the equivariance property of the graph convolution. 
-The rationale being that as the spectral bases align, the two operations become more similar, with the consequence that the equivariance property of the spherical convolution being carried out to the graph convolution. 
+% \todo{there is a compromise about the sampling quality (how far from uniform) and how close discrete computations can be made to the true continuous ones}
 
+\paragraph{Why is the harmonic analysis of the graph important for equivariance?}
+As both the graph and the spherical convolution can be expressed as a multiplication in the Fourier domain, the spectral analysis of the graph Laplacian provides valuable insights on the equivariance property of the graph convolution.
+The rationale being that as the spectral bases align, the two operations become more similar, with the consequence that the equivariance property of the spherical convolution being carried out to the graph convolution.
 
-\paragraph{Example:} 
-In order to better understand this process, let us study the circle Manifold $\mathcal{C}^1$ as depicted in \figref{ring}. We parametrize each point $(\cos\theta,\sin\theta)$ of $\mathcal{C}^1$ with the variable $\theta\in[0,2\pi[$.
-For this manifold, the eigenfunctions of the Laplace-Beltrami operator can be expressed as $u_\ell(\theta)=e^{i \theta m \ell}$, for $\ell \in \mathbb{N}$ and $m\in\{-1,1\}$. 
-Interestingly, if one selects a \emph{regular sampling} on the $\mathcal{C}^1$, as shown in \figref{ring}, the sampled eigenfunctions turn out to be the discrete Fourier basis, meaning that the harmonic decomposition of a discretized function on the circle can be done using the well-known Discrete Fourier Transform (DFT). 
-In this case, it turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors graph Laplacian \cite{strang1999discrete}. Hence, in the $\mathcal{C}^1$ case, it can be verified, under mild assumptions, that the graph convolution is equivariant to translation\footnote{See \cite[section 2.2 and Equation3]{perraudin2017stationary} for details.}  
-It should be noted that if an irregular sampling is selected, then the graph Fourier basis will not align the sampled manifold eigenvectors. 
+\paragraph{Example.}
+In order to better understand this process, let us study the circle manifold $\mathcal{C}^1$ as depicted in \figref{ring}. We parametrize each point $(\cos\theta,\sin\theta)$ of $\mathcal{C}^1$ with the variable $\theta\in[0,2\pi[$.
+For this manifold, the eigenfunctions of the Laplace-Beltrami operator can be expressed as $u_\ell(\theta)=e^{i \theta m \ell}$, for $\ell \in \mathbb{N}$ and $m\in\{-1,1\}$.
+Interestingly, if one selects a \emph{regular sampling} on the $\mathcal{C}^1$, as shown in \figref{ring}, the sampled eigenfunctions turn out to be the discrete Fourier basis, meaning that the harmonic decomposition of a discretized function on the circle can be done using the well-known Discrete Fourier Transform (DFT).
+In this case, it turns out that the DFT is also an eigenbase of the of $2$ nearest neighbors graph Laplacian \cite{strang1999discrete}. Hence, in the $\mathcal{C}^1$ case, it can be verified, under mild assumptions, that the graph convolution is equivariant to translation\footnote{See \cite[section 2.2 and equation 3]{perraudin2017stationary} for details.}
+It should be noted that if an irregular sampling is selected, then the graph Fourier basis will not align the sampled manifold eigenvectors.
 
-The argument for the graph Laplacian to be diabonizable with the DFT basis is simple: a) the graph Laplacian is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases. 
+The argument for the graph Laplacian to be diabonizable with the DFT basis is simple: a) the graph Laplacian is symmetric circulant and that all circulant matrices have complex exponentials as eigenbases.
 More generally, higher dimension circles, such as the torus $\mathcal{C}^2$, have also a circulant weight matrix and hence their associated graph is also equipped with an equivariant convolution.
 
 \paragraph{Necessary conditions for the rotational equivariance on the sphere}
 We note two important points for the equivariance property to be carried on the graph convolution: a) the sampling needs to be regular, and b), the constructed graph has to be constructed circulant,\footnote{A circulant graph is an undirected graph acted on by a cyclic group of symmetries which takes any vertex to any other vertex.} i.e. it has a circulant weight matrix.
-Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of more than $12$ points. Hence it is in general not possible to build a graph with a convolution that is equivariant to rotation\footnote{The exception is the dense graph. Unfortunately, in the extreme case the graph convolution is limited to Kronkeker kernels, which makes it useless.}. 
+Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of more than $12$ points. Hence it is in general not possible to build a graph with a convolution that is equivariant to rotation\footnote{The exception is the dense graph. Unfortunately, in the extreme case the graph convolution is limited to Kronecker kernels, which makes it useless.}.
 
 
 
@@ -229,7 +260,7 @@ Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of m
 
 
 % Proper study of symmetries and equivariance requires a continuous treatment.
-% @Michael: Not necessarily. It is more complicated than that. For example, if you work in the spectral domain, you can bypass sampling problem. This is what happen with the work of Cohen. So I think we should not speak about that. 
+% @Michael: Not necessarily. It is more complicated than that. For example, if you work in the spectral domain, you can bypass sampling problem. This is what happen with the work of Cohen. So I think we should not speak about that.
 % For example, only rotations by $90^\circ$ can be studied on a discrete sampling grid.
 
 
@@ -244,14 +275,14 @@ Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of m
 % \Delta_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
 % \end{equation}
 
-% Let us extend the graph Laplacian 
+% Let us extend the graph Laplacian
 
 % \begin{equation}
 % \L \b{f}[i] := \frac{1}{n} \left( \b{f}[i]\sum_{j=1}^n k_t(x_i,x_j) -\sum_{j=1}^n \b{f}[j] k_t(x_i,x_j)\right),
 % \end{equation}
 % where $k_t(x_i,x_j)=e^{-\frac{x_i-x_j}{4t}}$, \label{eq:full_graph_gaussian_weight}
 % to each point on the Sphere.
- 
+
 %  It is a generalization of the graph Laplacian operator that apply on a function $f:\mathcal{S}^2 \rightarrow \mathbb{R} $:
 % \begin{equation}
 % L_t f(y) := \frac{1}{n} \left( f(y)\sum_{j=1}^n k_t(y,x_j)-\sum_{j=1}^n f(x_j)k_t(y,x_j) \right)
@@ -261,7 +292,7 @@ Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of m
 %  Given a function $f\in \mathcal{C}^\infty(\mathcal{S}^2)$ and for a fixed point $p \in \mathcal{C}^2$, after appropriate scaling the operator $L_t$, converge toward of the  Laplace–Beltrami operator.
 
 % \begin{theorem}[Adaptation of Theorem 3.1 of~\cite{belkin2005towards}, Laplacian convergence] \label{theo:laplacian_convergence_belkin}
-% Let data points $\b{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \mathbb{R}^T$. 
+% Let data points $\b{x}_1,\dots, \b{x}_N$ be sampled from a uniform distribution on a manifold $\mathcal{M} \subset \mathbb{R}^T$.
 % Using the weight function \eqref{eq:full_graph_gaussian_weight}, define a sequence $t_N=N^{-\frac{1}{4+\alpha}}$, where $\alpha>0$ and let $f\in \mathcal{C}^\infty(\mathcal{C}^2)$, then the following holds:
 % \begin{equation}
 % \lim_{N \rightarrow \infty} \frac{1}{t_N(4\pi t_N)} (L \b{f})[i] = \frac{1}{\text{vol} (\mathcal{C}^2)} (\Delta_{\mathcal{C}^2} f)(\b{x}_i)
@@ -273,21 +304,21 @@ Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of m
 
 % The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
 
-\paragraph{Empirical analysis of DeepSphere graph Laplacian:} 
+\paragraph{Empirical analysis of DeepSphere graph Laplacian:}
 % Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
 Given the graph used for DeepSphere, let us analyse the spectral alignment of the graph Fourier basis and the spherical harmonics.
 The graph Laplacian eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
 % We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector.
-% Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. 
+% Furthermore, all spherical harmonics with the same order $\ell$ have the same variation.
 % Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
 These blocks corresponds to the different eigenspaces of the spherical harmonics.
 We also show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
 %The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 For $N_{side}=4$, we clearly observe a good allignment for $\ell\leq 8$. This mean that for kernel with low frequencies, the graph convolution will be rotational equivariant. On the contrary, a kernel with higher frequencies ($\ell>8$) will not be.
 
-% While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, 
-% one should not forget that 
-The imperfection in the allignment is likely due to the small irregularities in the HEALPix sampling (non-constant number of neighboring pixels and varying distance between pixels, \todo{see \figref{healpix_graph_4})} have an important effect on the graph Fourier modes.
+% While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics,
+% one should not forget that
+The imperfection in the alignment is likely due to the small irregularities in the HEALPix sampling (non-constant number of neighboring pixels and varying distance between pixels, \todo{see \figref{healpix_graph_4})} have an important effect on the graph Fourier modes.
 % First, we believe that they are responsible for energy leaking across frequency bands in \figref{subspace_harmonics_eigenvectors}.
 Furthermore, the graph construction scheme might not be optimal as the resulting Laplacian is probably far from circulant. One construction scheme that might be more adapted is a fully connected graph as this scheme is used in convergence proof in \cite{belkin2005towards,belkin2007convergence}.
 % Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
@@ -302,14 +333,14 @@ Furthermore, the graph construction scheme might not be optimal as the resulting
 \begin{minipage}{.2\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{ring}
-	\captionof{figure}{Green: Circle Manifold $\mathcal{C}^1$. Red: the regular sampled points and graph vertices. Blue: graph edges.}
+	\captionof{figure}{Green: circle manifold $\mathcal{C}^1$. Red: the regular sampled points and graph vertices. Blue: graph edges.}
 	\label{fig:ring}
 \end{minipage}
 \hspace{1cm}
 \begin{minipage}{.7\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{graph_eigenvalues}
-	\captionof{figure}{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. 
+	\captionof{figure}{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders.
 	See also \figref{graph_harmonics}.
 	}
 	\label{fig:graph_eigenvalues}
@@ -346,6 +377,15 @@ Furthermore, the graph construction scheme might not be optimal as the resulting
 
 \todo{maybe mention some preliminary results on SHREC-17: we could say performance are so far mostly similar (while being invariant to the third rotation), still under study}
 
+% \begin{figure}
+% 	\includegraphics[height=0.2\linewidth]{example_model_esteves}
+% 	\includegraphics[height=0.2\linewidth]{example_model_projected_esteves}
+% 	\caption{
+% 		Projection of a 3D model on the sphere.
+% 		Typical task on which spherical CNNs are evaluated.
+% 		Compared to the examples in \figref{spherical_data_examples}, the data covers the whole sphere and is regularly sampled.}
+% \end{figure}
+
 \section{Conclusion}  % & perspective
 
 \todo{Generalization vs specialization: most general is to assume no symmetries (fully connected NN).
@@ -353,7 +393,10 @@ NNs can be specialized by adding some equivariance and invariance to symmetry gr
 More specialized NNs are more limited in the class of functions they can approximate, but requires less samples.
 Again, use the right symmetries.}
 
-\todo{As equivariance is not the Graal either. We expect the desired amount of equivariance to depend on the data and task. As usual, practitioners should adopt a NN architecture that exploit the symmetries of their problem. Cite paper with difference operators that is not equivariant but performs better than Cohen.}
+exploit symmetries in the data by being equivariant (or invariant) to a select group of symmetric transformations (symmetry group).
+In this paper, we argue that graph neural networks are a flexible model (albeit not the most general) to exploit such symmetries.
+
+\todo{As equivariance is not the Graal either. We expect the desired amount of equivariance to depend on the data and task. As usual, practitioners should adopt a NN architecture that exploit the symmetries of their problem. \citep{coors2018sphericalcnn, jiang2019sphericalcnn}.}
 
 \todo{future directions: equivalence / convergence to spherical harmonics, other tasks, comparison with other spherical CNNs, graph CNNs (especially those for manifolds), boundary conditions on partial sphere}
 

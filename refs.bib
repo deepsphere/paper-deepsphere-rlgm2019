@@ -1,4 +1,17 @@
-%% Deepsphere
+%% Graph NNs
+
+
+@inproceedings{defferrard2016gnn,
+  title={Convolutional neural networks on graphs with fast localized spectral filtering},
+  author={Defferrard, Micha{\"e}l and Bresson, Xavier and Vandergheynst, Pierre},
+  booktitle={Advances in Neural Information Processing Systems},
+  pages={3844--3852},
+  year={2016}
+}
+
+
+%% Spherical CNNs
+
 
 @article{perraudin2018deepsphere,
   title={DeepSphere: Efficient spherical Convolutional Neural Network with HEALPix sampling for cosmological applications},
@@ -7,7 +20,75 @@
   year={2018}
 }
 
+@inproceedings{khasanova2017graphomni,
+  author={P. Frossard and R. Khasanova},
+  booktitle={2017 IEEE International Conference on Computer Vision Workshops (ICCVW)},
+  title={Graph-Based Classification of Omnidirectional Images},
+  year={2017},
+  volume={},
+  number={},
+  pages={860-869},
+  ISSN={},
+  month={Oct},
+}
+
+@article{cohen2018sphericalcnn,
+  title={Spherical CNNs},
+  author={Cohen, Taco S and Geiger, Mario and Koehler, Jonas and Welling, Max},
+  journal={arXiv:1801.10130},
+  archivePrefix = "arxiv",
+  year={2018}
+}
+
+@article{kondor2018sphericalcnn,
+  title={Clebsch-Gordan Nets: a Fully Fourier Space Spherical Convolutional Neural Network},
+  author={Kondor, Risi and Lin, Zhen and Trivedi, Shubhendu},
+  journal={arXiv:1806.09231},
+  archivePrefix = "arxiv",
+  year={2018}
+}
+
+@article{esteves2017sphericalcnn,
+  title={Learning SO(3) Equivariant Representations with Spherical CNNs},
+  author={Esteves, Carlos and Allen-Blanchette, Christine and Makadia, Ameesh and Daniilidis, Kostas},
+  journal={arXiv:1711.06721},
+  archivePrefix = "arxiv",
+  year={2017}
+}
+
+@inproceedings{boomsma2017sphericalcnn,
+  title={Spherical convolutions and their application in molecular modelling},
+  author={Boomsma, Wouter and Frellsen, Jes},
+  booktitle={Advances in Neural Information Processing Systems},
+  pages={3436--3446},
+  year={2017}
+}
+
+@inproceedings{su2017sphericalcnn,
+  title={Learning spherical convolution for fast features from 360 imagery},
+  author={Su, Yu-Chuan and Grauman, Kristen},
+  booktitle={Advances in Neural Information Processing Systems},
+  pages={529--539},
+  year={2017}
+}
+
+@inproceedings{coors2018sphericalcnn,
+  author = {Benjamin Coors and Alexandru Paul Condurache and Andreas Geiger},
+  title = {SphereNet: Learning Spherical Representations for Detection and Classification in Omnidirectional Images},
+  booktitle = {European Conference on Computer Vision},
+  year = {2018}
+}
+
+@article{jiang2019sphericalcnn,
+  title={Spherical CNNs on Unstructured Grids},
+  author={Jiang, Chiyu and Huang, Jingwei and Kashinath, Karthik and Marcus, Philip and Niessner, Matthias and others},
+  journal={arXiv preprint arXiv:1901.02039},
+  year={2019}
+}
+
+
 %% Sphere pixelizations
+
 
 @article{healpix,
   title={HEALPix: a framework for high-resolution discretization and fast analysis of data distributed on the sphere},
@@ -54,20 +135,16 @@
 }
 
 
-%% Graph NNs
-
-
-@inproceedings{defferrard2016gnn,
-  title={Convolutional neural networks on graphs with fast localized spectral filtering},
-  author={Defferrard, Micha{\"e}l and Bresson, Xavier and Vandergheynst, Pierre},
-  booktitle={Advances in Neural Information Processing Systems},
-  pages={3844--3852},
-  year={2016}
-}
-
-
 %% Equivariance
 
+
+@inproceedings{cohen2016equivariance,
+  title={Group equivariant convolutional networks},
+  author={Cohen, Taco and Welling, Max},
+  booktitle={International conference on machine learning},
+  pages={2990--2999},
+  year={2016}
+}
 
 @article{kondor2018equivariance,
   title={On the generalization of equivariance and convolution in neural networks to the action of compact groups},
@@ -75,6 +152,41 @@
   journal={arXiv:1802.03690},
   archivePrefix = "arxiv",
   year={2018}
+}
+
+
+%% Graphs as sampled manifolds
+
+
+@inproceedings{taubin1996meshsmoothing,
+  title={Optimal surface smoothing as filter design},
+  author={Taubin, Gabriel and Zhang, Tong and Golub, Gene},
+  booktitle={European Conference on Computer Vision},
+  pages={283--292},
+  year={1996},
+  organization={Springer}
+}
+
+@article{belkin2003laplacian,
+  title={Laplacian eigenmaps for dimensionality reduction and data representation},
+  author={Belkin, Mikhail and Niyogi, Partha},
+  journal={Neural computation},
+  volume={15},
+  number={6},
+  pages={1373--1396},
+  year={2003},
+  publisher={MIT Press}
+}
+
+@article{shuman2013gsp,
+  title={The emerging field of signal processing on graphs: Extending high-dimensional data analysis to networks and other irregular domains},
+  author={Shuman, David I and Narang, Sunil K and Frossard, Pascal and Ortega, Antonio and Vandergheynst, Pierre},
+  journal={IEEE Signal Processing Magazine},
+  volume={30},
+  number={3},
+  pages={83--98},
+  year={2013},
+  publisher={IEEE}
 }
 
 
@@ -118,8 +230,6 @@
   publisher={SIAM}
 }
 
-
-<<<<<<< HEAD
 @article{perraudin2017stationary,
   title={Stationary signal processing on graphs},
   author={Perraudin, Nathana{\"e}l and Vandergheynst, Pierre},
@@ -131,7 +241,7 @@
   publisher={IEEE}
 }
 
-=======
+
 %% Data
 
 
@@ -149,4 +259,3 @@ archivePrefix = "arxiv",
    adsurl = {http://adsabs.harvard.edu/abs/2016A%26A...594A...1P},
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
->>>>>>> a700ae2eb2de017eb5973258a74f763c0b37e5a7
