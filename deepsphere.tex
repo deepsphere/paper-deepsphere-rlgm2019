@@ -401,7 +401,7 @@ Furthermore, the graph construction is most probably not optimal.
 	\caption{
 		Classification accuracies.
 		% of the fully convolutional variant of DeepSphere (DeepSphere FCN), the standard convolutional variant of DeepSphere (DeepSphere CNN), the fully convolutional 2D ConvNet (2D ConvNet FCN), the standard 2D ConvNet (2D ConvNet CNN), the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
-		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere, order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$, and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$. 
+		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere ($\approx 1 \times 10^6$ pixels), order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$ ($\approx 260 \times 10^3$ pixels), and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$ ($\approx 65 \times 10^3$ pixels). 
 		% The standard deviation of the added Gaussian noise varies from zero to $2\times$ the standard deviation of pixel's values in the noiseless maps.
 		% It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). 
 		The FCN variant of DeepSphere beats the CNN variant by being invariant to rotation. Both variants largely beat the 2D ConvNet and the two SVM baselines.
@@ -419,9 +419,9 @@ The performance of DeepSphere is demonstrated on a discrimination problem: the c
 The details about the experimental setup can be found in \cite{perraudin2018deepsphere}. The code and instructions to reproduce the results is availlable at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
 % \todo{While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible.}
 
-We control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from whole sky maps.
-Using the properties of HEALPix, we split maps into $12 \times o^2$ ($o=1,2,4,\dots$) independent samples of $(N_{pix} / o)^2$ pixels. The resulting partial maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\% ($\approx 1 \times 10^6$ pixels), 2.1\% ($\approx 260 \times 10^3$ pixels), and 0.5\% ($\approx 65 \times 10^3$ pixels) of the sphere for $o=1,2,4$, respectively.
-To make the discrimination harder and the problem more realistic, centered Gaussian noise is added to the simulated maps.
+% We control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from whole sky maps.
+% Using the properties of HEALPix, we split maps into $12 \times o^2$ ($o=1,2,4,\dots$) independent samples of $(N_{pix} / o)^2$ pixels. The resulting partial maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\% ($\approx 1 \times 10^6$ pixels), 2.1\% ($\approx 260 \times 10^3$ pixels), and 0.5\% ($\approx 65 \times 10^3$ pixels) of the sphere for $o=1,2,4$, respectively.
+% To make the discrimination harder and the problem more realistic, centered Gaussian noise is added to the simulated maps.
 % \todo{The standard deviation of the noise varies from zero (i.e., no noise) to $2\times$ the standard deviation of pixel's values in the noiseless maps.}
 
 We utilize two different networks. The "CNN variant", where the convolutional layers are followed by a dense layer and the "FCN variant" where the final layers is simply summarized with an average pooling. 
@@ -513,8 +513,8 @@ Practically, the 2D projection from the spherical maps to flat images distorts t
 % Part of a broader research effort to explore the use of GSP to solve continuous problems.
 
 \subsubsection*{Acknowledgments}
-
-\todo{Pierre, Cardoso, Tomek? -> Tomek should be an author...}
+Left blank during the review process.
+% \todo{Pierre, Cardoso, Tomek? -> Tomek should be an author...}
 
 \bibliography{refs}
 \bibliographystyle{iclr2019}
