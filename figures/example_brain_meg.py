@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 From https://martinos.org/mne/dev/auto_tutorials/plot_visualize_evoked.html
 """
@@ -7,7 +9,7 @@ import os
 import matplotlib.pyplot as plt
 import mne
 
-#plt.rc('font', family='Latin Modern Roman')
+# plt.rc('font', family='Latin Modern Roman')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{lmodern}')
 
