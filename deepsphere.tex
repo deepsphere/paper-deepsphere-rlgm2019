@@ -62,7 +62,8 @@
 \DeclareMathOperator*{\vect}{vec}
 \DeclareMathOperator*{\argmin}{arg \, min}
 
-\title{DeepSphere}
+%\title{DeepSphere}
+\title{DeepSphere: a graph-based spherical CNN with approximate equivariance}
 % Keywords: equivariance, spherical CNN, graph NN
 %\title{DeepSphere: an equivariant spherical CNN based on a graph NN}
 %\title{DeepSphere: a graph-based equivariant spherical CNN}
@@ -80,6 +81,7 @@ Nathanaël Perraudin \\
 Swiss Data Science Center (SDSC) \\
 Zurich, Switzerland \\
 \texttt{nathanael.perraudin@sdsc.ethz.ch} \\
+%TODO: Tomek Raphaël
 }
 
 \newcommand{\fix}{\marginpar{FIX}}
@@ -161,7 +163,8 @@ Schemes have been engineered for particular applications and come with trade-off
 However, while sampling locations can be precisely controlled in some cases (like the CMOS sensors of an omni-directional camera), sensors might in general be non-uniformly distributed, cover only part of the sphere, and move (see \figref{examples}).
 Modeling the sampled sphere as a discrete graph has the potential to faithfully and efficiently represent sampled spherical data by placing vertices where data has been measured: no need to handle missing data or to interpolate to some predefined sampling, and no waste of memory or precision due to over- or under-sampling.
 Graph-based spherical CNNs have been proposed in \citet{khasanova2017graphomni} and \citet{perraudin2018deepsphere}.
-Moreover, graph convolutions have a lower computational cost of $\bO(N_{pix})$ compared to $\bO(N_{pix}^{2/3})$ for the SHT-based convolutions of \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, where $N_{pix}$ is the number of considered pixels.
+Moreover, graph convolutions have a low computational cost of $\bO(N_{pix})$, where $N_{pix}$ is the number of considered pixels.
+Methods based on proper spherical convolutions, like \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, costs $\bO(N_{pix}^{2/3})$.
 
 %\todo{Most of our views are shaped by cosmology. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems however the most advanced for SP on the sphere.}
 
@@ -174,7 +177,8 @@ Finally, like classical 2D CNNs are equivariant to translations, we want spheric
 % we'll nuance this view in the conclusion
 A rotation-equivariant CNN detects patterns regardless of how they are rotated on the sphere: they exploit the rotational symmetries of the data through weight sharing.
 Realizing that, spheres can be used to support data which does not intrinsically live on a sphere but have rotational symmetries \citep[for 3D objects and molecules]{cohen2018sphericalcnn, esteves2017sphericalcnn}.
-In this contribution we present DeepSphere~\cite{perraudin2018deepsphere}, a spherical neural network leaveraging graph convolution for its speed and flexibility. Furthermore, we discuss under which setting graph convolution on the sphere can is close to equivariant to rotations.
+In this contribution we present DeepSphere~\citep{perraudin2018deepsphere}, a spherical neural network leveraging graph convolution for its speed and flexibility.
+Furthermore, we discuss the rotation equivariance of graph convolution on the sphere.
 
 % \todo{From \citet{kondor2018equivariance}:
 % A convolution implies the equivariance to the action of some group.
@@ -189,7 +193,7 @@ In this contribution we present DeepSphere~\cite{perraudin2018deepsphere}, a sph
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{figure_architecture_v3}
-	\caption{Overall NN architecture, showing here three convolutional layers acting as feature extractors followed by three fully connected layers with softmax acting as the classifier.
+	\caption{Architecture showing three convolutional layers followed by three fully connected layers.
  % %    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling.
 	% % While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted.
 	% In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph.
@@ -205,24 +209,26 @@ In this contribution we present DeepSphere~\cite{perraudin2018deepsphere}, a sph
 \section{Method}
 
 % \todo{Basics of GSP, how the graph is built, polynomial filters.}
-Our method relies on the graph signal processing framework~\cite{shuman2013gsp}, which highly relies on the spectral properties of the graph Laplacian operator. 
-In particular, the Fourier transform is defined as the projection on the Laplacian eigenvectors. Then, the graph convolution is defined as a multiplication in the Fourier domain. 
-It turns out that the graph convolution can be accelerated by being performed directly in the vertex domain, i.e. using the pixel values on the sphere~\cite{hammond2011wavelets}.
+Our method relies on the graph signal processing framework~\citep{shuman2013gsp}, which highly relies on the spectral properties of the graph Laplacian operator.
+In particular, the Fourier transform is defined as the projection of the signal on the eigenvectors of the Laplacian, and the graph convolution as a multiplication in the Fourier domain.
+It turns out that the graph convolution can be accelerated by being performed directly in the vertex domain, i.e., using the pixel values on the sphere~\citep{hammond2011wavelets}.
 
-DeepSphere, presented in \figref{architecture}, leverages the graph convolution
-% and hierarchical pooling 
-to achieve the following properties: (i) computational efficiency(ii) adaptation to irregular sampling, and (iii) close to rotation equivariance.
+DeepSphere leverages graph convolutions
+% and hierarchical pooling
+to achieve the following properties: (i) computational efficiency, (ii) adaptation to irregular sampling, and (iii) close to rotation equivariance.
+See an example architecture in \figref{architecture}.
 The main idea is to model the discretised sphere as a graph of connected pixels: the length of the shortest path between two pixels is an approximation of the geodesic distance between them.
 We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, and a pooling strategy that exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
-The current implementation of DeepSphere relies on the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix}, a popular sampling used in cosmology and astrophysics. 
+The current implementation of DeepSphere relies on the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix}, a popular sampling used in cosmology and astrophysics.
 See \citet{perraudin2018deepsphere} for details.
 DeepSphere is, however, easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
-The flexibility of modeling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled. 
+The flexibility of modeling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
 Furthermore, using a $k$-nearest neighbors graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
 This is the lowest possible complexity for a convolution without approximations.
 
-Nevertheless, while the graph framework used offers great flexibility, its ability to represent the underlying sphere, highly depends on sampling choice and on the graph construction.
-This should not be neglected since the better the manifold representation, the closer to rotational equivariant the graph convolution will be. 
+Nevertheless, while the graph framework offers great flexibility, its ability to faithfully represent the underlying sphere highly depends on the sampling locations and the graph construction.
+This should not be neglected since the better the graph represents the sphere, the closer to rotation equivariant the graph convolution will be.
+% true for all manifolds: exploit their intrinsic symmetries (but how to define that?)
 
 % DeepSphere is readily apt to solve four tasks: (i) global classification (i.e., predict a class from a map), (ii) global regression (i.e., predict a set of parameters from a map), (iii) dense classification (i.e., predict a class for each pixel of a map), and (iv) dense regression, (i.e., predict a set of maps from a map).
 % Input data are spherical maps with a single value per pixel, such as the CMB temperature, or multiple values per pixel, such as surveys at multiple radio frequencies.
@@ -230,16 +236,9 @@ This should not be neglected since the better the manifold representation, the c
 % While there exists many graph NNs (see for example xxx and xxx for recent reviews),
 % \todo{Why this graph NN? We want an equivalence with the continuous world to prove equivariance to arbitrary rotations.}
 
-
 % \todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
 
-
-
-
-
 % That should be short: it's an ML audience. We can reference previous work. No general ML stuff, as in cosmo paper.
-
-
 
 %\section{Spherical harmonics and equivariance}
 \section{Harmonics and equivariance}
@@ -257,7 +256,7 @@ This should not be neglected since the better the manifold representation, the c
 \begin{minipage}[c]{.21\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{ring}
-	\captionof{figure}{circle $\mathcal{C}^1$ (green), regularly sampled points and graph vertices (red), graph edges (blue).}
+	\captionof{figure}{circle $\mathcal{C}^1$ (green), regular samples and graph vertices (red), graph edges (blue).}
 	\label{fig:ring}
 \end{minipage}
 \hfill
@@ -281,9 +280,9 @@ This should not be neglected since the better the manifold representation, the c
 		% No real convergence with increasing Nside.
 		% Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
 		% The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
-		The matrix shows how the subspaces agree: the subspaces spanned by the Fourier modes correspond to those spanned by the spherical harmonics in the low frequencies, and the Fourier modes leak towards adjacent frequency bands at higher frequencies.
+		The matrix shows how the subspaces agree: the subspaces spanned by the Fourier basis corresponds to those spanned by the spherical harmonics in the low frequencies, and the eigenvectors leak towards adjacent frequency bands at higher frequencies.
 		%While there is a systematic error,
-		The Fourier modes agree at higher frequencies as the resolution ($N_{side}$) increases.}
+		The graph Fourier basis agree at higher frequencies as the resolution ($N_{side}$) increases.}
 		\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
@@ -369,8 +368,9 @@ The above does however not hold for irregular samplings: the more irregular the 
 
 % The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
 
-\paragraph{Empirical analysis of the graph Laplacian used in DeepSphere.} 
-While there exists no regular sampling for the sphere and hence the same reasoning does not hold in that case, we can still perform a harmonic analysis to assess how similar the graph and the sphere convolutions are.
+\paragraph{Analysis of the graph Laplacian used in DeepSphere.}
+As there is no regular sampling of the sphere, we cannot have a similar reasoning as we had for the circle.
+We can however perform a harmonic analysis to empirically assess how similar the graph and the spherical convolutions are.
 % Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
 %Given the graph used for DeepSphere, let us analyze the spectral alignment of the graph Fourier basis and the spherical harmonics.
 The graph Laplacian eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
@@ -401,9 +401,9 @@ Furthermore, the graph construction is most probably not optimal.
 	\caption{
 		Classification accuracies.
 		% of the fully convolutional variant of DeepSphere (DeepSphere FCN), the standard convolutional variant of DeepSphere (DeepSphere CNN), the fully convolutional 2D ConvNet (2D ConvNet FCN), the standard 2D ConvNet (2D ConvNet CNN), the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
-		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere ($\approx 1 \times 10^6$ pixels), order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$ ($\approx 260 \times 10^3$ pixels), and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$ ($\approx 65 \times 10^3$ pixels). 
+		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere ($\approx 1 \times 10^6$ pixels), order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$ ($\approx 260 \times 10^3$ pixels), and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$ ($\approx 65 \times 10^3$ pixels).
 		% The standard deviation of the added Gaussian noise varies from zero to $2\times$ the standard deviation of pixel's values in the noiseless maps.
-		% It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). 
+		% It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision).
 		The FCN variant of DeepSphere beats the CNN variant by being invariant to rotation. Both variants largely beat the 2D ConvNet and the two SVM baselines.
 	}
 	\label{fig:results}
@@ -414,9 +414,10 @@ Furthermore, the graph construction is most probably not optimal.
 % Preliminary results on shape retrieval (SHREC-17) indicate similar performance as \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}.
 % \todo{(while being isotropic and invariant to the third rotation)}
 
-\paragraph{Setup:}
-The performance of DeepSphere is demonstrated on a discrimination problem: the classification of cosmological convergence maps\footnote{Convergence maps represent the dimensionless distribution of over- and under-densities of mass in the universe, projected on the sky plane.} into two model classes. 
-The details about the experimental setup can be found in \cite{perraudin2018deepsphere}. The code and instructions to reproduce the results is availlable at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
+\paragraph{Setup.}
+The performance of DeepSphere is demonstrated on a discrimination problem: the classification of cosmological convergence maps\footnote{Convergence maps represent the dimensionless distribution of over- and under-densities of mass in the universe, projected on the sky plane.} into two model classes.
+Details about the experimental setup can be found in \cite{perraudin2018deepsphere}.
+The code and instructions to reproduce the results are available at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
 % \todo{While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible.}
 
 % We control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from whole sky maps.
@@ -424,18 +425,18 @@ The details about the experimental setup can be found in \cite{perraudin2018deep
 % To make the discrimination harder and the problem more realistic, centered Gaussian noise is added to the simulated maps.
 % \todo{The standard deviation of the noise varies from zero (i.e., no noise) to $2\times$ the standard deviation of pixel's values in the noiseless maps.}
 
-We utilize two different networks. The "CNN variant", where the convolutional layers are followed by a dense layer and the "FCN variant" where the final layer is simply summarized with an average pooling. 
-The FCN variant provides an architecture that is invariant to rotation providing that the convolution is rotational equivariant.
+We utilize two different networks: the ``CNN variant'', where the convolutional layers are followed by a dense layer, and the ``FCN variant'', where the convolutional layers are followed by global average pooling.
+The FCN variant is rotation invariant to the extent that the convolution is rotation equivariant.
 
-\paragraph{Baselines:}
+\paragraph{Baselines.}
 DeepSphere is first compared against two simple yet powerful cosmological baselines, based on features that are (i) the power spectral densities (PSD) of maps, and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
 DeepSphere is further compared to a classical CNN for 2D Euclidean grids, later referred to as 2D ConvNet~\cite{krachmalnicoff2019convolutional}.
 To be fed into the 2D ConvNet, samples have to be transformed into flat images.
 The number of filters was reduced in order to match the number of trainable parameters between DeepSphere and the 2D ConvNet.
 
 
-\paragraph{Results:}
-The \figref{results} summaries the results.
+\paragraph{Results.}
+\Figref{results} summaries the results.
 % We indeed observe that the problem is made more difficult as the sample size decreases, and the noise increases.
 % As fewer pixels are available to make a decision about a sample, the algorithms have access to less information and thus cannot classify as well.
 % As the noise increases, the useful information gets diluted in irrelevant data, i.e., the signal-to-noise ratio (SNR) diminishes.
@@ -445,17 +446,17 @@ The \figref{results} summaries the results.
 % The histogram features contain information about the distribution of pixels, which clearly varies for the two classes.
 % They do not, however, include any spatial information.
 % DeepSphere (both the FCN and CNN variants) shows superior performance over all configurations.
-Overall, DeepSphere performs the best with a gap that widens as the problem becomes more difficult.
+Overall, DeepSphere performs best with a gap that widens as the problem becomes more difficult.
 % This is likely due to DeepSphere learning features that are adapted to the problem instead of relying on hand-designed features.
 % The accuracy of DeepSphere is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 % It may seem unfair to compare DeepSphere, who has access to raw pixels, with SVMs who only see limited features (histograms and PSDs).
 % We however trained an SVM on the raw pixels and were unable to obtain over $60\%$ accuracy in any of the three noiseless cases.
-As a consequence that our dataset is invariant to rotation, the FCN variants outperform the CNN variants.
+As our task is rotation invariant (due to the cosmological principle of homogeneity and isotropy), the FCN variant outperforms the CNN variant.
 The 2D ConvNet fairs in-between the SVMs and DeepSphere.
-We believe that its relatively low performance comes from the drawback that the network convolutions are not rotational invariant.
-Practically, the 2D projection from the spherical maps to flat images distorts the geometry, and the NN has to learn to compensate for it, which comparatively requires more training data.
+We believe that its relatively low performance is due to its lack of rotation equivariance.
+This architecture does not exploit the rotational symmetries of the task.
+Moreover, the projection of spherical maps to flat images distorts the geometry, and the NN has to learn to compensate for it.%, which comparatively requires more training data.
 % We also observed that the learned convolution kernels were not radial.
-
 
 % This may seem counterintuitive as the CNN is a generalization of the FCN and hence should be able to learn the same function and provide at least equivalently good results.
 % Nevertheless, as discussed in \secref{architecture}, the larger number of parameters incurred by the increased flexibility requires more training data to learn the rotation symmetry.
