@@ -417,7 +417,7 @@ Furthermore, the graph construction is most probably not optimal.
 % \todo{(while being isotropic and invariant to the third rotation)}
 
 \paragraph{Setup.}
-The performance of DeepSphere is demonstrated on a discrimination problem: the classification of cosmological convergence maps\footnote{Convergence maps represent the dimensionless distribution of over- and under-densities of mass in the universe, projected on the sky plane.} into two model classes.
+The performance of DeepSphere is demonstrated on a discrimination problem: the classification of cosmological convergence maps\footnote{Convergence maps represent the distribution of over- and under-densities of mass in the universe.} into two model classes.
 Details about the experimental setup can be found in \cite{perraudin2018deepsphere}.
 The code and instructions to reproduce the results are available at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
 % \todo{While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible.}
@@ -427,14 +427,15 @@ The code and instructions to reproduce the results are available at \url{https:/
 % To make the discrimination harder and the problem more realistic, centered Gaussian noise is added to the simulated maps.
 % \todo{The standard deviation of the noise varies from zero (i.e., no noise) to $2\times$ the standard deviation of pixel's values in the noiseless maps.}
 
-We utilize two different networks: the ``CNN variant'', where the convolutional layers are followed by a dense layer, and the ``FCN variant'', where the convolutional layers are followed by global average pooling.
+We propose two architectures: the ``CNN variant'', where convolutional layers are followed by dense layers, and the ``FCN variant'', where convolutional layers are followed by global average pooling.
 The FCN variant is rotation invariant to the extent that the convolution is rotation equivariant.
 
 \paragraph{Baselines.}
 DeepSphere is first compared against two simple yet powerful cosmological baselines, based on features that are (i) the power spectral densities (PSD) of maps, and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
-DeepSphere is further compared to a classical CNN for 2D Euclidean grids, later referred to as 2D ConvNet~\cite{krachmalnicoff2019convolutional}.
-To be fed into the 2D ConvNet, samples have to be transformed into flat images.
-The number of filters was reduced in order to match the number of trainable parameters between DeepSphere and the 2D ConvNet.
+DeepSphere is further compared to a classical CNN for 2D Euclidean grids, as in \citep{krachmalnicoff2019convolutional}.
+%It can be applied thanks to properties of HEALPix .
+To be fed into the 2D ConvNet, partial spherical signals are transformed into flat images.
+DeepSphere and the 2D ConvNet have the same number of trainable parameters.
 
 
 \paragraph{Results.}
@@ -453,11 +454,9 @@ Overall, DeepSphere performs best with a gap that widens as the problem becomes 
 % The accuracy of DeepSphere is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 % It may seem unfair to compare DeepSphere, who has access to raw pixels, with SVMs who only see limited features (histograms and PSDs).
 % We however trained an SVM on the raw pixels and were unable to obtain over $60\%$ accuracy in any of the three noiseless cases.
-As our task is rotation invariant (due to the cosmological principle of homogeneity and isotropy), the FCN variant outperforms the CNN variant.
+The FCN variant outperforms the CNN variant as it exploits the rotational symmetry of the task (explained by the cosmological principle of homogeneity and isotropy).
 The 2D ConvNet fairs in-between the SVMs and DeepSphere.
-We believe that its relatively low performance is due to its lack of rotation equivariance.
-This architecture does not exploit the rotational symmetries of the task.
-Moreover, the projection of spherical maps to flat images distorts the geometry, and the NN has to learn to compensate for it.%, which comparatively requires more training data.
+Lower performance is thought to be due to a lack of rotation equivariance, and to the geometric distortion introduced by the projection, which the NN has to learn to compensate for.%, which comparatively requires more training data.
 % We also observed that the learned convolution kernels were not radial.
 
 % This may seem counterintuitive as the CNN is a generalization of the FCN and hence should be able to learn the same function and provide at least equivalently good results.
