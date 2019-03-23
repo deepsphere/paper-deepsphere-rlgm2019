@@ -370,7 +370,7 @@ The above does however not hold for irregular samplings: the more irregular the 
 % The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
 
 \paragraph{Empirical analysis of the graph Laplacian used in DeepSphere.} 
-While there exists no regular sampling for the sphere and hence the same reasoning does not hold for the sphere, we can still perform an harmonic analysis to assess how similar the graph and the sphere convolutions are.
+While there exists no regular sampling for the sphere and hence the same reasoning does not hold in that case, we can still perform a harmonic analysis to assess how similar the graph and the sphere convolutions are.
 % Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
 %Given the graph used for DeepSphere, let us analyze the spectral alignment of the graph Fourier basis and the spherical harmonics.
 The graph Laplacian eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
@@ -452,7 +452,7 @@ Overall, DeepSphere performs the best with a gap that widens as the problem beco
 % We however trained an SVM on the raw pixels and were unable to obtain over $60\%$ accuracy in any of the three noiseless cases.
 As a consequence that our dataset is invariant to rotation, the FCN variants outperform the CNN variants.
 The 2D ConvNet fairs in-between the SVMs and DeepSphere.
-We believe that its relatively low performance comes from the drawback that the network convolution are not rotational invariant.
+We believe that its relatively low performance comes from the drawback that the network convolutions are not rotational invariant.
 Practically, the 2D projection from the spherical maps to flat images distorts the geometry, and the NN has to learn to compensate for it, which comparatively requires more training data.
 % We also observed that the learned convolution kernels were not radial.
 
@@ -513,7 +513,7 @@ Practically, the 2D projection from the spherical maps to flat images distorts t
 % Part of a broader research effort to explore the use of GSP to solve continuous problems.
 
 \subsubsection*{Acknowledgments}
-Left blank during the review process.
+Intentionally left blank during the review process.
 % \todo{Pierre, Cardoso, Tomek? -> Tomek should be an author...}
 
 \bibliography{refs}
