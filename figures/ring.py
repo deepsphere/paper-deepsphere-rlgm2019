@@ -20,7 +20,7 @@ G.plot(edges=True, ax=ax, title='', vertex_color='r', edge_color='b')
 circle = plt.Circle((0, 0), radius=1, color='g', fill=False, LineWidth=3)
 ax.add_artist(circle)
 
-angle = 45
+angle = 45*1.5
 
 line_1 = plt.Line2D([1, 0], [0, 0], linewidth=2, linestyle="-", color="black")
 line_2 = plt.Line2D([np.cos(angle/360*2*np.pi), 0], [np.sin(angle/360*2*np.pi), 0], linewidth=2, linestyle = "--", color="black")
