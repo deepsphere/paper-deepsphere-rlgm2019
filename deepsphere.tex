@@ -96,7 +96,7 @@ Zurich, Switzerland \\
 	Spherical data is found in many applications.
 	By modeling the discretized sphere as a graph, we can accommodate non-uniformly distributed, partial, and changing samplings.
 	Moreover, graph convolutions are computationally more efficient than spherical convolutions.
-	As equivariance is desired to exploit rotational symmetries, we present preliminary results on the rotation equivariance of the graph neural network introduced in \citet{defferrard2016gnn}.
+	As equivariance is desired to exploit rotational symmetries, we present preliminary results on the rotation equivariance of the graph neural network introduced in \citet{defferrard2016convolutional}.
 	Experiments show good performance on rotation-invariant learning problems.
 \end{abstract}
 
@@ -149,7 +149,7 @@ Spherical data can be seen as a continuous function
 that is sampled at discrete locations.
 %is sampled at convenient points, given by a chosen pixelization.
 As it is impossible to construct a regular discretization of the sphere, there is no perfect spherical sampling.
-Schemes have been engineered for particular applications and come with trade-offs \citep{healpix, glesp}.
+Schemes have been engineered for particular applications and come with trade-offs \citep{gorski2005healpix,glesp}.
 %emphasizing one or more features at the cost of others.
 % For example, the equirectangular (a.k.a.\ equiangular or geographic) grid, used in most spherical CNNs, is most similar to a 2D grid.
 % HEALPix features equal-area and hierarchically organized pixels, and has a fast spherical harmonic transform (SHT) \citep{healpix}.
@@ -174,7 +174,7 @@ Finally, like classical 2D CNNs are equivariant to translations, we want spheric
 % we'll nuance this view in the conclusion
 A rotation-equivariant CNN detects patterns regardless of how they are rotated on the sphere: they exploit the rotational symmetries of the data through weight sharing.
 Realizing that, spheres can be used to support data which does not intrinsically live on a sphere but have rotational symmetries \citep[for 3D objects and molecules]{cohen2018sphericalcnn, esteves2017sphericalcnn}.
-In this contribution, we discuss preliminary results on the equivariance to rotations of graph convolutions, when the graph models the sphere.
+In this contribution we present DeepSphere~\cite{perraudin2018deepsphere}, a spherical neural network leaveraging graph convolution for its speed and flexibility. Furthermore, we discuss under which setting graph convolution on the sphere can is close to equivariant to rotations.
 
 % \todo{From \citet{kondor2018equivariance}:
 % A convolution implies the equivariance to the action of some group.
@@ -187,6 +187,27 @@ In this contribution, we discuss preliminary results on the equivariance to rota
 % \end{figure}
 
 \section{Method}
+
+% \todo{Basics of GSP, how the graph is built, polynomial filters.}
+Our method relies on the graph signal processing framework \cite{shuman2013gsp}. In this setting  
+
+
+DeepSphere, presented in \figref{architecture}, leverages convolutions on graphs and hierarchical pooling to achieve the following properties: (i) computational efficiency(ii) adaptation to irregular sampling, and (iii) close to rotation equivariance,.
+The main idea is to model the discretised sphere as a graph of connected pixels: the length of the shortest path between two pixels is an approximation of the geodesic distance between them.
+We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, and a pooling strategy that exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
+The current implementation of DeepSphere relies on the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix}, a popular sampling used in cosmology and astrophysics.
+DeepSphere is, however, easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
+The flexibility of modeling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled. 
+Furthermore, using a $k$-nearest neighbours graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
+This is the lowest possible complexity for a convolution without approximations.
+
+Neverthless, while graphs offer great flexility, their ability to represent the underlying manifold (here the sphere) and hence for their convolution to be close to rotational equivariant will, as we shall see in the next section,  highly depends on sampling choice and on the graph construction.
+
+% DeepSphere is readily apt to solve four tasks: (i) global classification (i.e., predict a class from a map), (ii) global regression (i.e., predict a set of parameters from a map), (iii) dense classification (i.e., predict a class for each pixel of a map), and (iv) dense regression, (i.e., predict a set of maps from a map).
+% Input data are spherical maps with a single value per pixel, such as the CMB temperature, or multiple values per pixel, such as surveys at multiple radio frequencies.
+
+% While there exists many graph NNs (see for example xxx and xxx for recent reviews),
+% \todo{Why this graph NN? We want an equivalence with the continuous world to prove equivariance to arbitrary rotations.}
 
 \begin{figure}
 	\centering
@@ -203,14 +224,12 @@ In this contribution, we discuss preliminary results on the equivariance to rota
 	\label{fig:architecture}
 \end{figure}
 
-\todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
-
-In this work, we use the graph neural network proposed by \citet{defferrard2016gnn}.
-While there exists many graph NNs (see for example xxx and xxx for recent reviews),
-\todo{Why this graph NN? We want an equivalence with the continuous world to prove equivariance to arbitrary rotations.}
+% \todo{We can take here a different stance than: "we'll use whatever method gives the best performance". SHTs are the standard analysis tool on the sphere. People not only want to apply learned filters, but designed ones (e.g., Gaussian smoothing), people want to interpret and see the spectrum as spectral analysis is important (at least in cosmo, we should find some refs for that}
 
 
-\todo{Basics of GSP, how the graph is built, polynomial filters.}
+
+
+
 % That should be short: it's an ML audience. We can reference previous work. No general ML stuff, as in cosmo paper.
 
 %\section{Spherical harmonics and equivariance}
