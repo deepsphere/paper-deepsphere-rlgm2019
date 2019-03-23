@@ -62,7 +62,6 @@
 \DeclareMathOperator*{\vect}{vec}
 \DeclareMathOperator*{\argmin}{arg \, min}
 
-%\title{DeepSphere}
 \title{DeepSphere: a graph-based spherical CNN with approximate equivariance}
 % Keywords: equivariance, spherical CNN, graph NN
 %\title{DeepSphere: an equivariant spherical CNN based on a graph NN}
@@ -75,13 +74,16 @@
 \author{Michaël Defferrard \\
 Institute of Electrical Engineering \\
 EPFL, Lausanne, Switzerland \\
-\texttt{michaël.defferrard@epfl.ch} \\
+\texttt{michaël.defferrard@epfl.ch}
 \And
 Nathanaël Perraudin \\
 Swiss Data Science Center (SDSC) \\
 Zurich, Switzerland \\
-\texttt{nathanael.perraudin@sdsc.ethz.ch} \\
-%TODO: Tomek Raphaël
+\texttt{nathanael.perraudin@sdsc.ethz.ch}
+\And
+Tomasz Kacprzak \& Raphael Sgier \\
+Institute for Particle Physics and Astrophysics, ETH Zurich, Switzerland \\
+\texttt{\{tomaszk,rsgier\}@phys.ethz.ch} \\
 }
 
 \newcommand{\fix}{\marginpar{FIX}}
@@ -89,7 +91,7 @@ Zurich, Switzerland \\
 \newcommand{\todo}[1]{{\color[rgb]{.6,.1,.6}{#1}}}
 \newcommand{\nati}[1]{{\color[rgb]{.1,.6,.1}{#1}}}
 
-%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
 
 \maketitle
@@ -514,8 +516,8 @@ Moreover, the projection of spherical maps to flat images distorts the geometry,
 % Part of a broader research effort to explore the use of GSP to solve continuous problems.
 
 \subsubsection*{Acknowledgments}
-Intentionally left blank during the review process.
-% \todo{Pierre, Cardoso, Tomek? -> Tomek should be an author...}
+
+We thank Pierre Vandergheynst for advice and helpful discussions, and Andreas Loukas for having processed the raw GHCN data.
 
 \bibliography{refs}
 \bibliographystyle{iclr2019}
