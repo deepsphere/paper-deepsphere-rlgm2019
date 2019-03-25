@@ -103,6 +103,7 @@ Institute for Particle Physics and Astrophysics, ETH Zurich, Switzerland \\
 	% As equivariance is desired to exploit rotational symmetries, we present preliminary results on the rotation equivariance of the graph neural network introduced in \citet{defferrard2016convolutional}.
 	As equivariance is desired to exploit rotational symmetries, we discuss how to approach rotation equivariance using the graph neural network introduced in \citet{defferrard2016convolutional}.
 	Experiments show good performance on rotation-invariant learning problems.
+	Code and examples are available at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
 \end{abstract}
 
 \begin{figure}[h]
@@ -112,10 +113,11 @@ Institute for Particle Physics and Astrophysics, ETH Zurich, Switzerland \\
 	\hfill
 	\includegraphics[height=0.25\linewidth]{example_brain_meg}
 	\caption{
-		Examples of real data on the sphere: (left) the cosmic microwave background (CMB) temperature from \citet{planck2015overview},
+		Examples of intrinsically spherical data: (left) the cosmic microwave background (CMB) temperature from \citet{planck2015overview},
 		%with galactic plane masked
 		(middle) daily maximum temperature from the Global Historical Climatology Network (GHCN),\protect\footnotemark (right) brain activity recorded through magnetoencephalography (MEG).\protect\footnotemark
 		For those examples, a rigid full-sphere pixelization is not ideal: the Milky Way's galactic plane masks observations, brain activity is measured on the scalp only, and the position and density of temperature sensors is arbitrary and changes over time.
+		Graphs can faithfully and efficiently represent sampled spherical data by placing vertices where data has been measured.
 		%\todo{something from climate, weather?}
 		%\todo{compare ideal full-spheres (like SHREC-17 projection from Esteves, 360 from Coors) to real-world measurements?}
 		%\todo{horizontal colorbar for brain}
@@ -165,8 +167,8 @@ Schemes have been engineered for particular applications and come with trade-off
 However, while sampling locations can be precisely controlled in some cases (like the CMOS sensors of an omni-directional camera), sensors might in general be non-uniformly distributed, cover only part of the sphere, and move (see \figref{examples}).
 Modeling the sampled sphere as a discrete graph has the potential to faithfully and efficiently represent sampled spherical data by placing vertices where data has been measured: no need to handle missing data or to interpolate to some predefined sampling, and no waste of memory or precision due to over- or under-sampling.
 Graph-based spherical CNNs have been proposed in \citet{khasanova2017graphomni} and \citet{perraudin2018deepsphere}.
-Moreover, graph convolutions have a low computational cost of $\bO(N_{pix})$, where $N_{pix}$ is the number of considered pixels.
-Methods based on proper spherical convolutions, like \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, costs $\bO(N_{pix}^{2/3})$.
+Moreover, graph convolutions have a low computational complexity of $\bO(N_{pix})$, where $N_{pix}$ is the number of considered pixels.
+Methods based on proper spherical convolutions, like \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, cost $\bO(N_{pix}^{2/3})$ operations.
 
 %\todo{Most of our views are shaped by cosmology. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems however the most advanced for SP on the sphere.}
 
@@ -177,7 +179,7 @@ Methods based on proper spherical convolutions, like \citet{cohen2018sphericalcn
 
 Finally, like classical 2D CNNs are equivariant to translations, we want spherical CNNs to be equivariant to 3D rotations \citep{cohen2016equivariance, kondor2018equivariance}.
 % we'll nuance this view in the conclusion
-A rotation-equivariant CNN detects patterns regardless of how they are rotated on the sphere: they exploit the rotational symmetries of the data through weight sharing.
+A rotation-equivariant CNN detects patterns regardless of how they are rotated on the sphere: it exploits the rotational symmetries of the data through weight sharing.
 Realizing that, spheres can be used to support data which does not intrinsically live on a sphere but have rotational symmetries \citep[for 3D objects and molecules]{cohen2018sphericalcnn, esteves2017sphericalcnn}.
 In this contribution we present DeepSphere~\citep{perraudin2018deepsphere}, a spherical neural network leveraging graph convolution for its speed and flexibility.
 Furthermore, we discuss the rotation equivariance of graph convolution on the sphere.
@@ -213,21 +215,23 @@ Furthermore, we discuss the rotation equivariance of graph convolution on the sp
 % \todo{Basics of GSP, how the graph is built, polynomial filters.}
 Our method relies on the graph signal processing framework~\citep{shuman2013gsp}, which highly relies on the spectral properties of the graph Laplacian operator.
 In particular, the Fourier transform is defined as the projection of the signal on the eigenvectors of the Laplacian, and the graph convolution as a multiplication in the Fourier domain.
-It turns out that the graph convolution can be accelerated by being performed directly in the vertex domain, i.e., using the pixel values on the sphere~\citep{hammond2011wavelets}.
+It turns out that the graph convolution can be accelerated by being performed directly in the vertex domain
+%, i.e., using the pixel values on the sphere
+\citep{hammond2011wavelets}.
 
 DeepSphere leverages graph convolutions
 % and hierarchical pooling
 to achieve the following properties: (i) computational efficiency, (ii) adaptation to irregular sampling, and (iii) close to rotation equivariance.
-See an example architecture in \figref{architecture}.
+An example architecture is shown in \figref{architecture}.
 The main idea is to model the discretised sphere as a graph of connected pixels: the length of the shortest path between two pixels is an approximation of the geodesic distance between them.
 We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, and a pooling strategy that exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
-The current implementation of DeepSphere relies on the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix}, a popular sampling used in cosmology and astrophysics.
+The current implementation of DeepSphere relies on the Hierarchical Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix}, a popular sampling used in cosmology and astrophysics.
 See \citet{perraudin2018deepsphere} for details.
 DeepSphere is, however, easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
-The flexibility of modeling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
-Furthermore, using a $k$-nearest neighbors graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
-This is the lowest possible complexity for a convolution without approximations.
 
+The flexibility of modeling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
+Furthermore, using a $k$-nearest neighbors graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations.
+This is the lowest possible complexity for a convolution without approximations.
 Nevertheless, while the graph framework offers great flexibility, its ability to faithfully represent the underlying sphere highly depends on the sampling locations and the graph construction.
 This should not be neglected since the better the graph represents the sphere, the closer to rotation equivariant the graph convolution will be.
 % true for all manifolds: exploit their intrinsic symmetries (but how to define that?)
@@ -278,13 +282,13 @@ This should not be neglected since the better the graph represents the sphere, t
 	\caption{Correspondence between the subspaces spanned by the graph Fourier basis and the spherical harmonics.
 		%The correspondence is computed in two steps.
 		First, we compute the power spectral density (PSD) of each graph eigenvector.
-		Second, as there is $2\ell+1$ spherical harmonics for each harmonic index $\ell$, we sum the contributions of the corresponding $2\ell+1$ graph eigenvectors.
+		Second, as there is $2\ell+1$ spherical harmonics for each degree $\ell$, we sum the contributions of the corresponding $2\ell+1$ graph eigenvectors.
 		% No real convergence with increasing Nside.
 		% Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
 		% The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
 		The matrix shows how the subspaces agree: the subspaces spanned by the Fourier basis corresponds to those spanned by the spherical harmonics in the low frequencies, and the eigenvectors leak towards adjacent frequency bands at higher frequencies.
 		%While there is a systematic error,
-		The graph Fourier basis agree at higher frequencies as the resolution ($N_{side}$) increases.}
+	The graph Fourier basis agree at higher frequencies as the resolution ($N_{pix} = 12 N_{side}^2$) increases.}
 		\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
@@ -310,8 +314,6 @@ The above does however not hold for irregular samplings: the more irregular the 
 % We note two important points for the equivariance property to be carried on the graph convolution: a) the sampling needs to be regular, and b), the constructed graph has to be constructed circulant,\footnote{A circulant graph is an undirected graph acted on by a cyclic group of symmetries which takes any vertex to any other vertex.} i.e. it has a circulant weight matrix.
 % Unfortunately, there exist no regular sampling for a sphere $\mathcal{S}^2$ of more than $12$ points. Hence it is in general not possible to build a graph with a convolution that is equivariant to rotation\footnote{The exception is the dense graph. Unfortunately, in the extreme case the graph convolution is limited to Kronecker kernels, which makes it useless.}.
 
-
-
 % \subsection{Boundary conditions}
 
 % The graph setting used throughout this contribution corresponds to assumed reflective border conditions.
@@ -329,14 +331,13 @@ The above does however not hold for irregular samplings: the more irregular the 
 % 	\label{fig:border_effects}
 % \end{figure}
 
-
-% \subsection{Convergence proof for random unform sampling}
+% \subsection{Convergence proof for random uniform sampling}
 
 % Let us use the angular parametrization of the sphere $\mathcal{S}^2=\{\bf{x} | \|\bf{x}\|_2=1 \}$, in term of angles of zenith, $\theta\in [0,\pi ]$, and azimuth $\phi\in [0,2\pi[$.
 % \begin{equation}
 % \Phi(\theta, \phi) = (\sin \theta \cos \phi, \sin \theta \sin \phi, \cos \theta )
 % \end{equation}
-% Let $\mathcal(C)^\infty(\mathcal{S}^2)$ denote the class of infinitely differentiable functions $\mathcal{S}^2\rightarrow \mathbb{R}$. Using the agnular parametrization of the sphere, the Laplace-Beltrami for a function $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ is given by:
+% Let $\mathcal(C)^\infty(\mathcal{S}^2)$ denote the class of infinitely differentiable functions $\mathcal{S}^2\rightarrow \mathbb{R}$. Using the angular parametrization of the sphere, the Laplace-Beltrami for a function $f\in \mathcal(C)^\infty(\mathcal{S}^2)$ is given by:
 % \begin{equation}
 % \Delta_{\mathcal{S}^2} f = \frac{1}{\sin \theta } \frac{\partial}{\partial \theta} \left(\sin \theta  \frac{\partial f}{\partial \theta} + \frac{1}{\sin^2 \theta} \frac{\partial^2f}{\partial \phi^2} \right)
 % \end{equation}
@@ -378,9 +379,12 @@ We can however perform a harmonic analysis to empirically assess how similar the
 The graph Laplacian eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
 These blocks correspond to the different eigenspaces of the spherical harmonics.
 We also show the correspondence between the subspaces spanned by the graph Fourier basis and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
-For $N_{side}=4$, we clearly observe a good alignment for $\ell \leq 8$: the graph convolution will be equivariant to rotations for low frequency filters.
-The imperfection in the alignment is likely due to the small irregularities in the HEALPix sampling (varying number of neighbors and varying distances).
-Furthermore, the graph construction is most probably not optimal.
+For example with $N_{side}=4$, we observe a good alignment for $\ell \leq 8$: the graph convolution will be equivariant to rotations for low frequency filters.
+The imperfections are likely due to the small irregularities of the HEALPix sampling (varying number of neighbors and varying distances between vertices).
+%Furthermore, the graph is currently not optimally constructed.
+%Further work is necessary
+Furthermore, a follow-up study is underway to optimally construct the graph.
+We also hope to get a proof of equivalence or convergence.
 % as the resulting Laplacian is probably far from circulant.
 %One construction scheme that might be more adapted is a fully connected graph as this scheme is used in convergence proof in \cite{belkin2005towards,belkin2007convergence}.
 % Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
@@ -419,7 +423,7 @@ Furthermore, the graph construction is most probably not optimal.
 \paragraph{Setup.}
 The performance of DeepSphere is demonstrated on a discrimination problem: the classification of cosmological convergence maps\footnote{Convergence maps represent the distribution of over- and under-densities of mass in the universe.} into two model classes.
 Details about the experimental setup can be found in \cite{perraudin2018deepsphere}.
-The code and instructions to reproduce the results are available at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
+%The code and instructions to reproduce the results are available at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
 % \todo{While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible.}
 
 % We control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from whole sky maps.
@@ -449,7 +453,7 @@ DeepSphere and the 2D ConvNet have the same number of trainable parameters.
 % The histogram features contain information about the distribution of pixels, which clearly varies for the two classes.
 % They do not, however, include any spatial information.
 % DeepSphere (both the FCN and CNN variants) shows superior performance over all configurations.
-Overall, DeepSphere performs best with a gap that widens as the problem becomes more difficult.
+Overall, DeepSphere performs best with a gap that widens as the problem gets more difficult.
 % This is likely due to DeepSphere learning features that are adapted to the problem instead of relying on hand-designed features.
 % The accuracy of DeepSphere is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 % It may seem unfair to compare DeepSphere, who has access to raw pixels, with SVMs who only see limited features (histograms and PSDs).
