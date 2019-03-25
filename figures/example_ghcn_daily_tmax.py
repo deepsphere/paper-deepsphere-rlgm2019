@@ -90,7 +90,8 @@ t = (year-2010)*365 + (month-1)*30 + (day-1)
 zmin, zmax = -20, 40
 
 #plt.scatter(stations['lon'][keep], stations['lat'][keep], s=None, c=data[:, t], cmap=plt.get_cmap('RdYlGn'))
-sc = ax.scatter(stations['lon'][keep], stations['lat'][keep], s=10, c=np.clip(data[:, t], zmin, zmax), cmap=plt.get_cmap('RdYlBu_r'),
+sc = ax.scatter(stations['lon'][keep], stations['lat'][keep], s=10,
+                c=np.clip(data[:, t], zmin, zmax), cmap=plt.get_cmap('RdYlBu_r'),
                 vmin=zmin, vmax=zmax, alpha=1, transform=ccrs.PlateCarree())
 
 ticks = range(zmin, zmax+1, 20)
