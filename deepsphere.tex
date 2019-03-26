@@ -196,10 +196,12 @@ Furthermore, we discuss the rotation equivariance of graph convolution on the sp
 % 	\label{fig:samplings}
 % \end{figure}
 
-\begin{figure}[t!]
+\begin{figure}[t]
 	\centering
 	\includegraphics[width=0.9\linewidth]{figure_architecture_v3}
-	\caption{Architecture showing three convolutional layers followed by three fully connected layers.
+	\caption{Example architecture.
+		Global tasks need a spatial summarization: the FCN variant is rotation invariant (and accepts inputs of varying sizes), while the CNN variant is not.
+		Dense tasks (when the output lives on the sphere, like segmentation) are rotation equivariant.
  % %    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling.
 	% % While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted.
 	% In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph.
