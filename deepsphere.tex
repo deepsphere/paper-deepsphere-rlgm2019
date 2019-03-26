@@ -260,18 +260,17 @@ This should not be neglected since the better the graph represents the sphere, t
 % \todo{there is a compromise about the sampling quality (how far from uniform) and how close discrete computations can be made to the true continuous ones}
 
 \begin{figure}
-\centering
-\begin{minipage}[c]{.21\textwidth}
+\begin{minipage}[c]{.21\linewidth}
 	\centering
 	\includegraphics[width=\linewidth]{ring}
-	\captionof{figure}{circle $\mathcal{C}^1$ (green), regular samples and graph vertices (red), graph edges (blue).}
+	\caption{circle $\mathcal{C}^1$ (green), regular samples and graph vertices (red), graph edges (blue).}
 	\label{fig:ring}
 \end{minipage}
 \hfill
-\begin{minipage}[c]{.7\textwidth}
+\begin{minipage}[c]{.7\linewidth}
 	\centering
 	\includegraphics[width=\linewidth]{graph_eigenvalues}
-	\captionof{figure}{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$ are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders.
+	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$ are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders.
 	% See also \figref{graph_harmonics}.
 	}
 	\label{fig:graph_eigenvalues}
@@ -280,17 +279,21 @@ This should not be neglected since the better the graph represents the sphere, t
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{subspace_harmonics_eigenvectors_v2}
+	\includegraphics[trim={0 6.37cm 0 0},clip,height=0.15\linewidth]{eigenvectors}
+	\hfill
+	\includegraphics[height=0.15\linewidth]{subspace_harmonics_eigenvectors_v2}
 	\caption{Correspondence between the subspaces spanned by the graph Fourier basis and the spherical harmonics.
+		The eigenvectors $\U = [\b u_1, \dots, \b u_{N_{pix}}]$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which form the Fourier basis, clearly resemble the spherical harmonics.
+		The first 8 are shown on the left.
 		%The correspondence is computed in two steps.
-		First, we compute the power spectral density (PSD) of each graph eigenvector.
-		Second, as there is $2\ell+1$ spherical harmonics for each degree $\ell$, we sum the contributions of the corresponding $2\ell+1$ graph eigenvectors.
+		To quantify the correspondence, we compute the power spectral density (PSD) of each eigenvector with the SHT.
+		Second, as there is $2\ell+1$ spherical harmonics for each degree $\ell$, we sum the contributions of the corresponding $2\ell+1$ eigenvectors.
 		% No real convergence with increasing Nside.
 		% Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
 		% The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
-		The matrix shows how the subspaces agree: the subspaces spanned by the Fourier basis corresponds to those spanned by the spherical harmonics in the low frequencies, and the eigenvectors leak towards adjacent frequency bands at higher frequencies.
+		The matrices on the right show how the subspaces align: the Fourier basis spans the same subspaces as the spherical harmonics in the low frequencies, and the eigenvectors leak towards adjacent frequency bands at higher frequencies.
 		%While there is a systematic error,
-	The graph Fourier basis agree at higher frequencies as the resolution ($N_{pix} = 12 N_{side}^2$) increases.}
+	The graph Fourier basis aligns at higher frequencies as the resolution ($N_{pix} = 12 N_{side}^2$) increases.}
 		\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
