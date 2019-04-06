@@ -2,6 +2,14 @@
 
 Congratulations! We are happy to inform you that your paper has been accepted to the ICLR 2019 Workshop on Representation Learning on Graphs and Manifolds. All papers will be presented as posters, and we will follow-up with additional presentation details in the coming days.
 
+## Meta-reviewer #2
+
+1. Recommendation
+Accept (poster)
+
+2. Meta review
+This paper proposes a novel approach to learning with spherical data by using a graph-based approximation to the sphere, followed by a GNN. Both reviewers found this work novel and clearly presented, with some missing references being noted.
+
 ## Reviewer #1
 
 4. Overall recommendation
