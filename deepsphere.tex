@@ -172,7 +172,7 @@ However, while sampling locations can be precisely controlled in some cases (lik
 Modeling the sampled sphere as a discrete graph has the potential to faithfully and efficiently represent sampled spherical data by placing vertices where data has been measured: no need to handle missing data or to interpolate to some predefined sampling, and no waste of memory or precision due to over- or under-sampling.
 Graph-based spherical CNNs have been proposed in \citet{khasanova2017graphomni} and \citet{perraudin2018deepsphere}.
 Moreover, graph convolutions have a low computational complexity of $\bO(N_{pix})$, where $N_{pix}$ is the number of considered pixels.
-Methods based on proper spherical convolutions, like \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, cost $\bO(N_{pix}^{2/3})$ operations.
+Methods based on proper spherical convolutions, like \citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn}, cost $\bO(N_{pix}^{3/2})$ operations.
 
 %\todo{Most of our views are shaped by cosmology. What is going on in other fields (climate, weather)? Do they have their own samplings? Cosmo seems however the most advanced for SP on the sphere.}
 
