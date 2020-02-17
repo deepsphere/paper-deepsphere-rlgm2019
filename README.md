@@ -35,3 +35,7 @@ Compile the latex source into a PDF with `make`.
 
 All the figures, along with the code and data to reproduce them, are in the [`figure`](figures/) folder.
 While the PDFs are stored, they can be regenerated with `make figures`.
+
+## Reviews
+
+The workshop reviews are found in [`reviews.md`](reviews.md).
