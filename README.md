@@ -13,7 +13,7 @@ Representation Learning on Graphs and Manifolds (RLGM) workshop, International C
 > Moreover, graph convolutions are computationally more efficient than spherical convolutions.
 > As equivariance is desired to exploit rotational symmetries, we discuss how to approach rotation equivariance using the graph neural network introduced in Defferrard et al. (2016).
 > Experiments show good performance on rotation-invariant learning problems.
-> Code and examples are available at https://github.com/SwissDataScienceCenter/DeepSphere.
+> Code and examples are available at https://github.com/deepsphere.
 
 **PDF available at [arxiv], [workshop], [infoscience].**\
 Related: [poster], [code], [data], [blog], [slides].
@@ -22,7 +22,7 @@ Related: [poster], [code], [data], [blog], [slides].
 [workshop]: https://rlgm.github.io/papers/71.pdf
 [infoscience]: https://infoscience.epfl.ch
 [poster]: https://doi.org/10.5281/zenodo.2839355
-[code]: https://github.com/SwissDataScienceCenter/DeepSphere
+[code]: https://github.com/deepsphere
 [data]: https://doi.org/10.5281/zenodo.1303271
 [blog]: https://datascience.ch/deepsphere-a-neural-network-architecture-for-spherical-data
 [slides]: https://doi.org/10.5281/zenodo.3243380
