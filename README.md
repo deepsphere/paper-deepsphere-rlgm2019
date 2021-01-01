@@ -1,12 +1,10 @@
 # DeepSphere: towards an equivariant graph-based spherical CNN
 
-[Nathanaël Perraudin][nath], [Michaël Defferrard][mdeff], [Tomasz Kacprzak][tomek], [Raphael Sgier][raphael]\
-Representation Learning on Graphs and Manifolds (RLGM) workshop, International Conference on Learning Representations (ICLR), 2019
-
-[nath]: https://perraudin.info
-[mdeff]: https://deff.ch
-[tomek]: https://www.ipa.phys.ethz.ch/people/person-detail.MjEyNzM5.TGlzdC82NjQsNTkxMDczNDQw.html
-[raphael]: https://www.ipa.phys.ethz.ch/people/person-detail.MTcyNDY3.TGlzdC82NjQsNTkxMDczNDQw.html
+[Nathanaël Perraudin](https://perraudin.info),
+[Michaël Defferrard](https://deff.ch),
+[Tomasz Kacprzak](https://www.ipa.phys.ethz.ch/people/person-detail.MjEyNzM5.TGlzdC82NjQsNTkxMDczNDQw.html),
+[Raphael Sgier](https://www.ipa.phys.ethz.ch/people/person-detail.MTcyNDY3.TGlzdC82NjQsNTkxMDczNDQw.html) \
+Representation Learning on Graphs and Manifolds (RLGM) workshop at the International Conference on Learning Representations (ICLR), 2019
 
 > Spherical data is found in many applications.
 > By modeling the discretized sphere as a graph, we can accommodate non-uniformly distributed, partial, and changing samplings.
@@ -15,17 +13,28 @@ Representation Learning on Graphs and Manifolds (RLGM) workshop, International C
 > Experiments show good performance on rotation-invariant learning problems.
 > Code and examples are available at https://github.com/deepsphere.
 
-**PDF available at [arxiv], [workshop], [infoscience].**\
-Related: [poster], [code], [data], [blog], [slides].
+```
+@inproceedings{deepsphere_rlgm,
+  title = {{DeepSphere}: towards an equivariant graph-based spherical {CNN}},
+  author = {Defferrard, Micha\"el and Perraudin, Nathana\"el and Kacprzak, Tomasz and Sgier, Raphael},
+  booktitle = {ICLR Workshop on Representation Learning on Graphs and Manifolds},
+  year = {2019},
+  archiveprefix = {arXiv},
+  eprint = {1904.05146},
+  url = {https://arxiv.org/abs/1904.05146},
+}
+```
 
-[arxiv]: https://arxiv.org/abs/1904.05146
+## Resources
+
+PDF available at [arXiv] and the [workshop].
+
+Related: [poster], [code].
+
+[arXiv]: https://arxiv.org/abs/1904.05146
 [workshop]: https://rlgm.github.io/papers/71.pdf
-[infoscience]: https://infoscience.epfl.ch
 [poster]: https://doi.org/10.5281/zenodo.2839355
 [code]: https://github.com/deepsphere
-[data]: https://doi.org/10.5281/zenodo.1303271
-[blog]: https://datascience.ch/deepsphere-a-neural-network-architecture-for-spherical-data
-[slides]: https://doi.org/10.5281/zenodo.3243380
 
 ## Compilation
 
