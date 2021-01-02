@@ -27,12 +27,12 @@ Representation Learning on Graphs and Manifolds (RLGM) workshop at the Internati
 
 ## Resources
 
-PDF available at [arXiv] and the [workshop].
+PDF available at [arXiv] and the [RLGM workshop].
 
 Related: [poster], [code].
 
 [arXiv]: https://arxiv.org/abs/1904.05146
-[workshop]: https://rlgm.github.io/papers/71.pdf
+[RLGM workshop]: https://rlgm.github.io/papers/71.pdf
 [poster]: https://doi.org/10.5281/zenodo.2839355
 [code]: https://github.com/deepsphere
 
@@ -46,6 +46,6 @@ Run `make clean` to remove temporary files and `make arxiv.zip` to prepare an ar
 All the figures, along with the code and data to reproduce them, are in the [`figures`](figures/) folder.
 While the PDFs are stored, they can be regenerated with `make figures`.
 
-## Reviews
+## Peer-review
 
-The workshop reviews are found in [`reviews.md`](reviews.md).
+The workshop reviews are in [`reviews.md`](reviews.md).
